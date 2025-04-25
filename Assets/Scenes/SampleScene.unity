@@ -132,6 +132,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 341581730}
+  - component: {fileID: 341581731}
   m_Layer: 0
   m_Name: Grid
   m_TagString: Untagged
@@ -154,6 +155,36 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &341581731
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 341581729}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b08e60f3cdd504a43aa8689d98abba97, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gridType: 1
+  gridData:
+    rid: 8512687884809011201
+  references:
+    version: 2
+    RefIds:
+    - rid: 8512687884809011201
+      type: {class: HexGridData, ns: , asm: Assembly-CSharp}
+      data:
+        edgeSize: 1
+        gridSpacing: 0.1
+        mapWidth: 16
+        mapHeight: 16
+        normalMat: {fileID: 2100000, guid: b2b28a9908c593c46ad054ae0ff5c36a, type: 2}
+        startPosMat: {fileID: 2100000, guid: c6dee1c6e6014a34089cb3bc0e6287a3, type: 2}
+        desiredMat: {fileID: 2100000, guid: 9f3d9e04f8141174d85e11b28032fc73, type: 2}
+        goalPosMat: {fileID: 2100000, guid: 723aa6c1222c31340b04bf9a22b75f30, type: 2}
+        hexType: 0
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0
@@ -332,11 +363,11 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: -10}
+  m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: 15, y: 40, z: 15}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
