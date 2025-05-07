@@ -1,71 +1,73 @@
-#if UNITY_EDITOR
-using System;
-using System.Collections.Generic;
 using UnityEditor;
+using UnityEngine;
+using System;
+using System.Linq;
+using System.Collections.Generic;
+using System.Reflection;
+using System.Collections;
 
 [CustomEditor(typeof(GridMgr))]
-public class GridManagerEditor : Editor
+public class GridDataHolderEditor : Editor
 {
-    [NonSerialized] public Dictionary<GridType, GridBaseData> savedData = new();
+    private SerializedProperty gridDataProp;
+    private Type[] gridTypes;
+    private string[] gridTypeNames;
+    private int selectedIndex = -1;
+
+    private void OnEnable()
+    {
+        gridDataProp = serializedObject.FindProperty("gridData");
+        // Get all types that inherit from GridBaseData
+        gridTypes = AppDomain.CurrentDomain.GetAssemblies()
+            .SelectMany(a => a.GetTypes())
+            .Where(t => !t.IsAbstract && typeof(GridBaseData).IsAssignableFrom(t))
+            .ToArray();
+
+        gridTypeNames = gridTypes.Select(t => t.Name).ToArray();
+
+        if (gridDataProp.managedReferenceValue != null)
+        {
+            Type currentType = gridDataProp.managedReferenceValue.GetType();
+            selectedIndex = Array.FindIndex(gridTypes, t => t == currentType);
+        }
+    }
+
     public override void OnInspectorGUI()
     {
-        var mgr = (GridMgr)target;
-        var prevType = mgr.gridType;
+        serializedObject.Update();
 
-        // Dropdown
-        GridType newType = (GridType)EditorGUILayout.EnumPopup("Grid Type", mgr.gridType);
-
-        // Khởi tạo dictionary nếu null
-        if (savedData == null)
+        // Dropdown to select type
+        int newIndex = EditorGUILayout.Popup("Grid Type", selectedIndex, gridTypeNames);
+        if (newIndex != selectedIndex)
         {
-            savedData = new Dictionary<GridType, GridBaseData>();
-        }
+            // Step 1: Backup base data
+            GridBaseData oldData = gridDataProp.managedReferenceValue as GridBaseData;
+            GridBaseData newData = Activator.CreateInstance(gridTypes[newIndex]) as GridBaseData;
 
-        // Nếu đổi type
-        if (newType != prevType)
-        {
-            // Lưu lại current gridData nếu chưa có trong savedData
-            if (mgr.gridData != null && !savedData.ContainsKey(prevType))
+            if (oldData != null && newData != null)
             {
-                savedData[prevType] = mgr.gridData;
-            }
+                var baseType = typeof(GridBaseData);
+                var fields = baseType.GetFields();
 
-            // Cập nhật type
-            mgr.gridType = newType;
-
-            // Load lại data nếu đã có trước đó
-            if (savedData.TryGetValue(newType, out var saved))
-            {
-                mgr.gridData = saved;
+                foreach (var field in fields)
+                {
+                    var oldValue = field.GetValue(oldData);
+                    field.SetValue(newData, oldValue);
+                }
             }
-            else
-            {
-                // Tạo mới nếu chưa có
-                mgr.gridData = CreateGridData(newType);
-            }
+            SerializedProperty gridTypeProp = serializedObject.FindProperty("gridType");
+            gridTypeProp.enumValueIndex = (int)GetTypeBaseOnClass(gridTypes[newIndex]);
 
-            // Đánh dấu object đã thay đổi để Unity lưu lại
-            EditorUtility.SetDirty(mgr);
+            gridDataProp.managedReferenceValue = newData;
+            selectedIndex = newIndex;
         }
-
-        // Hiển thị thuộc tính cụ thể của type
-        if (mgr.gridData != null)
-        {
-            SerializedProperty gridDataProp = serializedObject.FindProperty("gridData"); // Get the reference to field named "gridData" inside target object (GridMgr) 
-            EditorGUILayout.PropertyField(gridDataProp, true);
-        }
-
+        EditorGUILayout.PropertyField(gridDataProp, true);
         serializedObject.ApplyModifiedProperties();
     }
-
-    private GridBaseData CreateGridData(GridType type)
+    private GridType GetTypeBaseOnClass(Type type)
     {
-        return type switch
-        {
-            GridType.Square => new SquareGridData(),
-            GridType.Hexagon => new HexGridData(),
-            _ => null
-        };
+        if(type == typeof(HexGridData)) return GridType.Hexagon;
+        if(type == typeof(SquareGridData)) return GridType.Square;
+        return GridType.Symetrics;
     }
 }
-#endif

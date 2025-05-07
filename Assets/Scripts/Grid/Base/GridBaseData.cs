@@ -11,4 +11,5 @@ using UnityEngine;
     public Material startPosMat;
     public Material desiredMat;
     public Material goalPosMat;
+    public Material[] terrainMat;
 }

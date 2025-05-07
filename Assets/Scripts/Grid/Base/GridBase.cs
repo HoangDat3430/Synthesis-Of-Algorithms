@@ -1,6 +1,4 @@
-using System.Collections;
 using System.Collections.Generic;
-using Unity.Collections;
 using UnityEngine;
 
 public abstract class GridBase : IGrid
@@ -58,6 +56,19 @@ public abstract class GridBase : IGrid
                 }
             }
             goalPos.NodeGO.GetComponent<MeshRenderer>().material = gridData.goalPosMat; // set color after previous result path cleared
+        }
+    }
+    public void SetTerrain(Node node, TerrainType type)
+    {
+        node.NodeGO.GetComponent<MeshRenderer>().material = gridData.terrainMat[(int)type];
+        if (type == TerrainType.Hole)
+        {
+            node.isObstacle = true;
+        }
+        else
+        {
+            node.mCost = (int)type;
+            node.isObstacle = false;
         }
     }
     public virtual void Init(GridBaseData data)

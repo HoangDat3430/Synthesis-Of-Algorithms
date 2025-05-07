@@ -1,13 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Unity.VisualScripting;
 using UnityEngine;
 
 public enum GridType
-    {
-        Square,
-        Hexagon,
-        Symetrics
-    }
+{
+    Square,
+    Hexagon,
+    Symetrics
+}
+public enum TerrainType
+{
+    None,
+    Water,
+    Swamp,
+    Rock,
+    Hole
+}
 public class GridMgr : MonoBehaviour
 {
     public static GridMgr Instance { get; private set; }
@@ -47,6 +54,16 @@ public class GridMgr : MonoBehaviour
                 {
                     _curGrid.SetStartPos(hitNode);
                 }
+            }
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha1) || Input.GetKeyDown(KeyCode.Alpha2) || Input.GetKeyDown(KeyCode.Alpha3) || Input.GetKeyDown(KeyCode.Alpha4))
+        {
+            RaycastHit hitInfo;
+            Ray hit = Camera.main.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(hit, out hitInfo, 100))
+            {
+                Node hitNode = _curGrid.GetNodeByGameObject(hitInfo.collider.gameObject);
+                _curGrid.SetTerrain(hitNode, (TerrainType)int.Parse(Input.inputString));
             }
         }
     }

@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657826, g: 0.49641263, b: 0.57481676, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -167,24 +167,30 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b08e60f3cdd504a43aa8689d98abba97, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gridType: 1
+  gridType: 0
   gridData:
-    rid: 8512687884809011201
+    rid: 1763639902232117272
   references:
     version: 2
     RefIds:
-    - rid: 8512687884809011201
-      type: {class: HexGridData, ns: , asm: Assembly-CSharp}
+    - rid: 1763639902232117272
+      type: {class: SquareGridData, ns: , asm: Assembly-CSharp}
       data:
         edgeSize: 1
         gridSpacing: 0.1
         mapWidth: 16
         mapHeight: 16
         normalMat: {fileID: 2100000, guid: b2b28a9908c593c46ad054ae0ff5c36a, type: 2}
-        startPosMat: {fileID: 2100000, guid: c6dee1c6e6014a34089cb3bc0e6287a3, type: 2}
-        desiredMat: {fileID: 2100000, guid: 9f3d9e04f8141174d85e11b28032fc73, type: 2}
+        startPosMat: {fileID: 2100000, guid: 9f3d9e04f8141174d85e11b28032fc73, type: 2}
+        desiredMat: {fileID: 2100000, guid: c6dee1c6e6014a34089cb3bc0e6287a3, type: 2}
         goalPosMat: {fileID: 2100000, guid: 723aa6c1222c31340b04bf9a22b75f30, type: 2}
-        hexType: 0
+        terrainMat:
+        - {fileID: 2100000, guid: b2b28a9908c593c46ad054ae0ff5c36a, type: 2}
+        - {fileID: 2100000, guid: 9cb26000d5f32db41bf4dfe690fce7ce, type: 2}
+        - {fileID: 2100000, guid: bdd07ea6dc6f238489da0ae91fbcbcda, type: 2}
+        - {fileID: 2100000, guid: 93dc128d5af1ffd4e907db4e44e30a15, type: 2}
+        - {fileID: 2100000, guid: c7344c3c6d5e0784eafcbe99d3d9156b, type: 2}
+        isEightDir: 1
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0
@@ -364,7 +370,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 15, y: 40, z: 15}
+  m_LocalPosition: {x: 15, y: 30, z: 10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
