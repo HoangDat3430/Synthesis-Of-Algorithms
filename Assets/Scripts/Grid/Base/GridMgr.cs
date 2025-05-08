@@ -9,7 +9,7 @@ public enum GridType
 }
 public enum TerrainType
 {
-    None,
+    Ground,
     Water,
     Swamp,
     Rock,
@@ -56,7 +56,7 @@ public class GridMgr : MonoBehaviour
                 }
             }
         }
-        if (Input.GetKeyDown(KeyCode.Alpha1) || Input.GetKeyDown(KeyCode.Alpha2) || Input.GetKeyDown(KeyCode.Alpha3) || Input.GetKeyDown(KeyCode.Alpha4))
+        if (Input.GetKeyDown(KeyCode.Alpha0) ||Input.GetKeyDown(KeyCode.Alpha1) || Input.GetKeyDown(KeyCode.Alpha2) || Input.GetKeyDown(KeyCode.Alpha3) || Input.GetKeyDown(KeyCode.Alpha4))
         {
             RaycastHit hitInfo;
             Ray hit = Camera.main.ScreenPointToRay(Input.mousePosition);

@@ -16,14 +16,14 @@ public abstract class GridBase : IGrid
         {
             if (startPos != null)
             {
-                startPos.NodeGO.GetComponent<MeshRenderer>().material = gridData.normalMat; //reset the previous start position
+                startPos.NodeGO.GetComponent<MeshRenderer>().material = gridData.terrainMat[(int)startPos.terrain]; //reset the previous start position
             }
             startPos = newStartNode;
             if (goalPos != null && goalPos != startPos)
             {
                 foreach (var node in PathFinding.resultPath)
                 {
-                    node.NodeGO.GetComponent<MeshRenderer>().material = gridData.normalMat;
+                    node.NodeGO.GetComponent<MeshRenderer>().material = gridData.terrainMat[(int)node.terrain];
                 }
                 PathFinding.AStar(startPos, goalPos);
                 foreach (Node node in PathFinding.resultPath)
@@ -40,14 +40,14 @@ public abstract class GridBase : IGrid
         {
             if (goalPos != null)
             {
-                goalPos.NodeGO.GetComponent<MeshRenderer>().material = gridData.normalMat; // reset the previous goal position
+                goalPos.NodeGO.GetComponent<MeshRenderer>().material = gridData.terrainMat[(int)goalPos.terrain]; // reset the previous goal position
             }
             goalPos = newGoalNode;
             if (startPos != null)
             {
                 foreach (var node in PathFinding.resultPath)
                 {
-                    node.NodeGO.GetComponent<MeshRenderer>().material = gridData.normalMat;
+                    node.NodeGO.GetComponent<MeshRenderer>().material = gridData.terrainMat[(int)node.terrain];
                 }
                 PathFinding.AStar(startPos, goalPos);
                 foreach (Node node in PathFinding.resultPath)
@@ -67,7 +67,7 @@ public abstract class GridBase : IGrid
         }
         else
         {
-            node.mCost = (int)type;
+            node.terrain = type;
             node.isObstacle = false;
         }
     }

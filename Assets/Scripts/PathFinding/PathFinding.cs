@@ -29,7 +29,6 @@ public static class PathFinding
         while (openNodes.Count > 0)
         {
             currentNode = openNodes.OrderBy(n => n.fCost).ThenBy(n => n.hCost).First();
-            //Debug.LogError("Take: " + currentNode.Position, currentNode.NodeGO);
             if (currentNode == end)
             {
                 TrackingBackPath(start, end);
@@ -37,7 +36,7 @@ public static class PathFinding
             }
             openNodes.Remove(currentNode);
             visitedNodes.Add(currentNode);
-            //Debug.LogError("Neighbours: " + currentNode.neighbors.Count, currentNode.NodeGO);
+            //Debug.LogError($"Cur: {currentNode.Position.x}:{currentNode.Position.y}", currentNode.NodeGO);
             foreach (var neighbor in currentNode.neighbors)
             {
                 if (visitedNodes.Contains(neighbor))
@@ -45,6 +44,7 @@ public static class PathFinding
                     continue;
                 }
                 float estimatedCost = currentNode.gCost + neighbor.mCost;
+                //Debug.LogError($"{neighbor.Position.x}:{neighbor.Position.y} => {estimatedCost} -- {neighbor.gCost}", neighbor.NodeGO.gameObject);
                 if (!openNodes.Contains(neighbor) || estimatedCost < neighbor.gCost)
                 {
                     neighbor.gCost = estimatedCost;
