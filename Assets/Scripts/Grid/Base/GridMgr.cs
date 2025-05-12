@@ -1,5 +1,4 @@
-﻿using Unity.VisualScripting;
-using UnityEngine;
+﻿using UnityEngine;
 
 public enum GridType
 {
@@ -19,7 +18,8 @@ public class GridMgr : MonoBehaviour
 {
     public static GridMgr Instance { get; private set; }
 
-    [SerializeField] public GridType gridType = GridType.Hexagon;
+    public PathFindingType algorithm = PathFindingType.AStar;
+    public GridType gridType = GridType.Hexagon;
     [SerializeReference] public GridBaseData gridData;
     private IGrid _curGrid;
     private IGridFactory _gridFactory;

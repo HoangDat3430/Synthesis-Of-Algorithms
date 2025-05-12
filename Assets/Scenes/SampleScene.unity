@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.44657826, g: 0.49641263, b: 0.57481676, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -167,13 +167,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b08e60f3cdd504a43aa8689d98abba97, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  algorithm: 2
   gridType: 1
   gridData:
-    rid: 1763639902232117273
+    rid: 3973535223210311705
   references:
     version: 2
     RefIds:
-    - rid: 1763639902232117273
+    - rid: 3973535223210311705
       type: {class: HexGridData, ns: , asm: Assembly-CSharp}
       data:
         edgeSize: 1

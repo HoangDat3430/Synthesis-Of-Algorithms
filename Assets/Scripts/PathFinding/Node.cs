@@ -9,14 +9,17 @@ public class Node
     public float hCost; // heuristic
     public float gCost = float.MaxValue; // cost so far
     public float fCost => gCost + hCost;
+    
     public Node prevNode;
+    public Node nextNode;
     public List<Node> neighbors;
+    
     public bool isObstacle;
     public TerrainType terrain = TerrainType.Ground;
+    public MeshRenderer meshRenderer;
     public GameObject NodeGO
     {
         get { return nodeGO; }
-        set { nodeGO = value; }
     }
     public Vector2Int Position
     {
@@ -28,5 +31,6 @@ public class Node
         this.pos = pos;
         this.isObstacle = isObstacle;
         prevNode = null;
+        meshRenderer = nodeGO.GetComponent<MeshRenderer>();
     }
 }

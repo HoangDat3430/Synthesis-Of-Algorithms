@@ -1,66 +1,78 @@
 using System.Collections.Generic;
+using System.Linq;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public abstract class GridBase : IGrid
 {
     public GridBaseData gridData;
-    public float Width { get { return Mathf.Sqrt(3) * gridData.edgeSize; } }
-    public float Height { get { return 2 * gridData.edgeSize; } }
 
     public Node[,] gridMap;
-    public Node startPos;
+    public Dictionary<Node, List<Node>> startNodeList = new Dictionary<Node, List<Node>>();
     public Node goalPos;
-    public void SetStartPos(Node newStartNode)
+    public void SetStartPos(Node start)
     {
-        if (startPos != newStartNode && newStartNode != goalPos)
+        // For toggle a start node
+        if (startNodeList.ContainsKey(start))
         {
-            if (startPos != null)
+            // Clear that start node's path
+            foreach (Node node in startNodeList[start])
             {
-                startPos.NodeGO.GetComponent<MeshRenderer>().material = gridData.terrainMat[(int)startPos.terrain]; //reset the previous start position
+                SetMaterial(node, gridData.terrainMat[(int)node.terrain]);
             }
-            startPos = newStartNode;
-            if (goalPos != null && goalPos != startPos)
+            start.meshRenderer.material = gridData.terrainMat[(int)start.terrain]; // reset the start node's material
+            startNodeList.Remove(start);
+            ShowPaths();
+        }
+        else
+        {
+            List<Node> path = new List<Node>();
+            if (goalPos != start)
             {
-                foreach (var node in PathFinding.resultPath)
+                if (goalPos != null)
                 {
-                    node.NodeGO.GetComponent<MeshRenderer>().material = gridData.terrainMat[(int)node.terrain];
+                    path = PathFinding.FindPath(GridMgr.Instance.algorithm, start, goalPos, this);
+                    foreach (Node node in path)
+                    {
+                        SetMaterial(node, gridData.desiredMat);
+                    }
                 }
-                PathFinding.AStar(startPos, goalPos);
-                foreach (Node node in PathFinding.resultPath)
-                {
-                    node.NodeGO.GetComponent<MeshRenderer>().material = gridData.desiredMat;
-                }
+                startNodeList[start] = path;
+                start.meshRenderer.material = gridData.startPosMat;
             }
-            startPos.NodeGO.GetComponent<MeshRenderer>().material = gridData.startPosMat; // set color after previous result path cleared
         }
     }
     public void SetGoalPos(Node newGoalNode)
     {
-        if (goalPos != newGoalNode && newGoalNode != startPos)
+        if (goalPos != newGoalNode && !startNodeList.ContainsKey(newGoalNode))
         {
+            // reset the previous goal position
             if (goalPos != null)
             {
-                goalPos.NodeGO.GetComponent<MeshRenderer>().material = gridData.terrainMat[(int)goalPos.terrain]; // reset the previous goal position
+                goalPos.meshRenderer.material = gridData.terrainMat[(int)goalPos.terrain]; 
             }
             goalPos = newGoalNode;
-            if (startPos != null)
+
+            var tempDic = new Dictionary<Node, List<Node>>();
+            foreach (var data in startNodeList)
             {
-                foreach (var node in PathFinding.resultPath)
+                // reset the previous path of each start node
+                foreach (Node node in data.Value)
                 {
-                    node.NodeGO.GetComponent<MeshRenderer>().material = gridData.terrainMat[(int)node.terrain];
+                    SetMaterial(node, gridData.terrainMat[(int)node.terrain]);
                 }
-                PathFinding.AStar(startPos, goalPos);
-                foreach (Node node in PathFinding.resultPath)
-                {
-                    node.NodeGO.GetComponent<MeshRenderer>().material = gridData.desiredMat;
-                }
+                // recalculate new path each start node and save the new path to temporary dictionary to avoid modifying the original dictionary while iterating
+                tempDic[data.Key] = PathFinding.FindPath(GridMgr.Instance.algorithm, data.Key, goalPos, this); 
             }
-            goalPos.NodeGO.GetComponent<MeshRenderer>().material = gridData.goalPosMat; // set color after previous result path cleared
+            // update the original dictionary with the new paths
+            startNodeList = tempDic;
+            ShowPaths();
+            goalPos.meshRenderer.material = gridData.goalPosMat;
         }
     }
     public void SetTerrain(Node node, TerrainType type)
     {
-        node.NodeGO.GetComponent<MeshRenderer>().material = gridData.terrainMat[(int)type];
+        if (!SetMaterial(node, gridData.terrainMat[(int)type])) return;
         if (type == TerrainType.Hole)
         {
             node.isObstacle = true;
@@ -71,13 +83,32 @@ public abstract class GridBase : IGrid
             node.isObstacle = false;
         }
     }
+    private bool SetMaterial(Node node, Material material)
+    {
+        bool canSet = node.meshRenderer.sharedMaterial != gridData.startPosMat && node.meshRenderer.sharedMaterial != gridData.goalPosMat;
+        if (canSet)
+        {
+            node.meshRenderer.material = material;
+        }
+        return canSet;
+    }
+    private void ShowPaths()
+    {
+        foreach (var data in startNodeList)
+        {
+            foreach (Node node in data.Value)
+            {
+                SetMaterial(node, gridData.desiredMat);
+            }
+        }
+    }
     public virtual void Init(GridBaseData data)
     {
-        gridData = data;
+        gridData = data; // set the grid base data for base logics
         GenGrid();
         SetNeighborsForAllGrid();
     }
-    public virtual void GenGrid()
+    public void GenGrid()
     {
         gridMap = new Node[gridData.mapWidth, gridData.mapHeight];
         for (int y = 0; y < gridData.mapHeight; y++)
@@ -87,9 +118,8 @@ public abstract class GridBase : IGrid
                 gridMap[x, y] = GenSingleNode(x, y);
             }
         }
-        SetStartPos(gridMap[0, 0]);
     }
-    public virtual Node GenSingleNode(int x, int y)
+    public Node GenSingleNode(int x, int y)
     {
         GameObject newGrid = new GameObject(string.Format("X:{0}, Y:{1}", x, y));
         newGrid.transform.parent = GridMgr.Instance.transform;
@@ -103,7 +133,7 @@ public abstract class GridBase : IGrid
     {
         return Vector3.zero;
     }
-    public virtual Node GetNodeByGameObject(GameObject go)
+    public Node GetNodeByGameObject(GameObject go)
     {
         foreach (var node in gridMap)
         {
@@ -114,7 +144,7 @@ public abstract class GridBase : IGrid
         }
         return null;
     }
-    public virtual void SetNeighborsForAllGrid()
+    public void SetNeighborsForAllGrid()
     {
         for (int x = 0; x < gridData.mapWidth; x++)
         {

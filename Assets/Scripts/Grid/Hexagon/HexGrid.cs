@@ -5,6 +5,7 @@ using UnityEngine;
 public class HexGrid : GridBase
 {
     private HexGridData _hexGridData;
+
     public override void Init(GridBaseData data)
     {
         _hexGridData = data as HexGridData;
@@ -31,7 +32,7 @@ public class HexGrid : GridBase
         Vector3 center = GetCenter(x, y);
         Vector3[] vertices = new Vector3[verticesCount];
         vertices[0] = center;
-        //Place the first vertex of the flat top hexagon at a distance = cos(0) from the center. For a pointy top, it is 30 degrees from this point.
+        //Place the first vertex of the flat top hexagon at a distance = cos(0) from the center. For a pointy top, it is cos(30) from this point.
         int angleOffset = _hexGridData.hexType == HexType.FlatTop ? 0 : 30;
         for (int i = 1; i < verticesCount; i++)
         {
@@ -45,8 +46,10 @@ public class HexGrid : GridBase
     }
     public override Vector3 GetCenter(int x, int y)
     {
-        float centerX = _hexGridData.hexType == HexType.FlatTop ? x * (Height / 2 + (float)gridData.edgeSize / 2) : x * Width + (y % 2 == 0 ? 0 : Width / 2);
-        float centerY = _hexGridData.hexType == HexType.FlatTop ? y * Width + (x % 2 == 0 ? 0 : Width / 2) : y * (Height / 2 + (float)gridData.edgeSize / 2);
+        float HexWidth = _hexGridData.HexTileWidth;
+        float HexHeight = _hexGridData.HexTileHeight;
+        float centerX = _hexGridData.hexType == HexType.FlatTop ? x * (HexHeight / 2 + (float)gridData.edgeSize / 2) : x * HexWidth + (y % 2 == 0 ? 0 : HexWidth / 2);
+        float centerY = _hexGridData.hexType == HexType.FlatTop ? y * HexWidth + (x % 2 == 0 ? 0 : HexWidth / 2) : y * (HexHeight / 2 + (float)gridData.edgeSize / 2);
         return new Vector3(centerX, 0, centerY);
     }
     private Vector2Int[] GetNeighborDir(Node node)

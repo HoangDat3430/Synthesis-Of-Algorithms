@@ -1,48 +1,38 @@
 using UnityEditor;
-using UnityEngine;
 using System;
 using System.Linq;
-using System.Collections.Generic;
-using System.Reflection;
-using System.Collections;
+using System.Diagnostics;
 
 [CustomEditor(typeof(GridMgr))]
 public class GridDataHolderEditor : Editor
 {
+    GridMgr gridMgr;
+    private SerializedProperty algorithmProp;
+    private SerializedProperty gridTypeProp;
     private SerializedProperty gridDataProp;
-    private Type[] gridTypes;
-    private string[] gridTypeNames;
     private int selectedIndex = -1;
 
     private void OnEnable()
     {
+        gridMgr = (GridMgr)target;
+        algorithmProp = serializedObject.FindProperty("algorithm");
+        gridTypeProp = serializedObject.FindProperty("gridType");
         gridDataProp = serializedObject.FindProperty("gridData");
-        // Get all types that inherit from GridBaseData
-        gridTypes = AppDomain.CurrentDomain.GetAssemblies()
-            .SelectMany(a => a.GetTypes())
-            .Where(t => !t.IsAbstract && typeof(GridBaseData).IsAssignableFrom(t))
-            .ToArray();
-
-        gridTypeNames = gridTypes.Select(t => t.Name).ToArray();
 
         if (gridDataProp.managedReferenceValue != null)
         {
-            Type currentType = gridDataProp.managedReferenceValue.GetType();
-            selectedIndex = Array.FindIndex(gridTypes, t => t == currentType);
+            selectedIndex = (int)gridMgr.gridType;
         }
     }
 
     public override void OnInspectorGUI()
     {
         serializedObject.Update();
-
-        // Dropdown to select type
-        int newIndex = EditorGUILayout.Popup("Grid Type", selectedIndex, gridTypeNames);
-        if (newIndex != selectedIndex)
+        if (gridTypeProp.enumValueIndex != selectedIndex)
         {
             // Step 1: Backup base data
             GridBaseData oldData = gridDataProp.managedReferenceValue as GridBaseData;
-            GridBaseData newData = Activator.CreateInstance(gridTypes[newIndex]) as GridBaseData;
+            GridBaseData newData = GetGridDataByType(gridMgr.gridType);
 
             if (oldData != null && newData != null)
             {
@@ -55,19 +45,25 @@ public class GridDataHolderEditor : Editor
                     field.SetValue(newData, oldValue);
                 }
             }
-            SerializedProperty gridTypeProp = serializedObject.FindProperty("gridType");
-            gridTypeProp.enumValueIndex = (int)GetTypeBaseOnClass(gridTypes[newIndex]);
-
             gridDataProp.managedReferenceValue = newData;
-            selectedIndex = newIndex;
+            selectedIndex = (int)gridMgr.gridType;
         }
+        EditorGUILayout.PropertyField(algorithmProp);
+        EditorGUILayout.PropertyField(gridTypeProp);
         EditorGUILayout.PropertyField(gridDataProp, true);
         serializedObject.ApplyModifiedProperties();
     }
-    private GridType GetTypeBaseOnClass(Type type)
+    private GridBaseData GetGridDataByType(GridType type)
     {
-        if(type == typeof(HexGridData)) return GridType.Hexagon;
-        if(type == typeof(SquareGridData)) return GridType.Square;
-        return GridType.Symetrics;
+        switch (type)
+        {
+            case GridType.Hexagon:
+                return new HexGridData();
+            case GridType.Square:
+                return new SquareGridData();
+            default:
+                break;
+        }
+        return null;
     }
 }
