@@ -8,8 +8,8 @@ using UnityEngine;
     public int mapWidth = 2;
     public int mapHeight = 4;
     public Material normalMat;
-    public Material startPosMat;
+    public Material startMat;
     public Material desiredMat;
-    public Material goalPosMat;
+    public Material goalMat;
     public Material[] terrainMat;
 }

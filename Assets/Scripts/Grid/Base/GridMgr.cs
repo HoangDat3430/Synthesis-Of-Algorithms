@@ -56,7 +56,7 @@ public class GridMgr : MonoBehaviour
                 }
             }
         }
-        if (Input.GetKeyDown(KeyCode.Alpha0) ||Input.GetKeyDown(KeyCode.Alpha1) || Input.GetKeyDown(KeyCode.Alpha2) || Input.GetKeyDown(KeyCode.Alpha3) || Input.GetKeyDown(KeyCode.Alpha4))
+        if (Input.GetKeyDown(KeyCode.Alpha0) || Input.GetKeyDown(KeyCode.Alpha1) || Input.GetKeyDown(KeyCode.Alpha2) || Input.GetKeyDown(KeyCode.Alpha3) || Input.GetKeyDown(KeyCode.Alpha4))
         {
             RaycastHit hitInfo;
             Ray hit = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -66,5 +66,15 @@ public class GridMgr : MonoBehaviour
                 _curGrid.SetTerrain(hitNode, (TerrainType)int.Parse(Input.inputString));
             }
         }
+    }
+    private void OnEnable()
+    {
+        UIEventBus.Subscribe<FindPathEvent>(_curGrid.OnFindPath);
+        UIEventBus.Subscribe<ResetMapEvent>(_curGrid.OnResetMap);
+    }
+    private void OnDsable()
+    {
+        UIEventBus.Unsubscribe<FindPathEvent>(_curGrid.OnFindPath);
+        UIEventBus.Unsubscribe<ResetMapEvent>(_curGrid.OnResetMap);
     }
 }

@@ -1,15 +1,17 @@
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
+public class FindPathEvent{}
+public class ResetMapEvent{}
 public abstract class GridBase : IGrid
 {
     public GridBaseData gridData;
-
     public Node[,] gridMap;
     public Dictionary<Node, List<Node>> startNodeList = new Dictionary<Node, List<Node>>();
-    public Node goalPos;
+    public Node goal;
     public void SetStartPos(Node start)
     {
         // For toggle a start node
@@ -20,55 +22,65 @@ public abstract class GridBase : IGrid
             {
                 SetMaterial(node, gridData.terrainMat[(int)node.terrain]);
             }
-            start.meshRenderer.material = gridData.terrainMat[(int)start.terrain]; // reset the start node's material
+            SetMaterial(start, gridData.terrainMat[(int)start.terrain], true); // reset the start node's material
             startNodeList.Remove(start);
             ShowPaths();
         }
         else
         {
-            List<Node> path = new List<Node>();
-            if (goalPos != start)
+            if (goal != start)
             {
-                if (goalPos != null)
-                {
-                    path = PathFinding.FindPath(GridMgr.Instance.algorithm, start, goalPos, this);
-                    foreach (Node node in path)
-                    {
-                        SetMaterial(node, gridData.desiredMat);
-                    }
-                }
-                startNodeList[start] = path;
-                start.meshRenderer.material = gridData.startPosMat;
+                startNodeList[start] = new List<Node>();
+                SetMaterial(start, gridData.startMat);
             }
         }
     }
     public void SetGoalPos(Node newGoalNode)
     {
-        if (goalPos != newGoalNode && !startNodeList.ContainsKey(newGoalNode))
+        if (goal != newGoalNode && !startNodeList.ContainsKey(newGoalNode))
         {
-            // reset the previous goal position
-            if (goalPos != null)
+            // reset the material of previous goal position
+            if (goal != null)
             {
-                goalPos.meshRenderer.material = gridData.terrainMat[(int)goalPos.terrain]; 
+                SetMaterial(goal, gridData.terrainMat[(int)goal.terrain], true);
             }
-            goalPos = newGoalNode;
-
-            var tempDic = new Dictionary<Node, List<Node>>();
-            foreach (var data in startNodeList)
-            {
-                // reset the previous path of each start node
-                foreach (Node node in data.Value)
-                {
-                    SetMaterial(node, gridData.terrainMat[(int)node.terrain]);
-                }
-                // recalculate new path each start node and save the new path to temporary dictionary to avoid modifying the original dictionary while iterating
-                tempDic[data.Key] = PathFinding.FindPath(GridMgr.Instance.algorithm, data.Key, goalPos, this); 
-            }
-            // update the original dictionary with the new paths
-            startNodeList = tempDic;
-            ShowPaths();
-            goalPos.meshRenderer.material = gridData.goalPosMat;
+            goal = newGoalNode;
+            SetMaterial(goal, gridData.goalMat, true);
         }
+    }
+    public void OnFindPath(FindPathEvent e)
+    {
+        var tempDic = new Dictionary<Node, List<Node>>();
+        foreach (var data in startNodeList)
+        {
+            // reset the previous path of each start node
+            foreach (Node node in data.Value)
+            {
+                SetMaterial(node, gridData.terrainMat[(int)node.terrain]);
+            }
+            // recalculate new path each start node and save the new path to temporary dictionary to avoid modifying the original dictionary while iterating
+            tempDic[data.Key] = PathFinding.FindPath(GridMgr.Instance.algorithm, data.Key, goal, this);
+        }
+        // update the original dictionary with the new paths
+        startNodeList = tempDic;
+        ShowPaths();
+    }
+    public void OnResetMap(ResetMapEvent e)
+    {
+        // reset all start node and it's path
+        foreach (var start in startNodeList)
+        {
+            SetMaterial(start.Key, gridData.terrainMat[(int)start.Key.terrain], true);
+            foreach (var node in start.Value)
+            {
+                SetMaterial(node, gridData.terrainMat[(int)start.Key.terrain]);
+                node.meshRenderer.material = gridData.normalMat;
+            }
+        }
+        startNodeList.Clear();
+        // reset goal node
+        SetMaterial(goal, gridData.terrainMat[(int)goal.terrain], true);
+        goal = null;
     }
     public void SetTerrain(Node node, TerrainType type)
     {
@@ -83,10 +95,10 @@ public abstract class GridBase : IGrid
             node.isObstacle = false;
         }
     }
-    private bool SetMaterial(Node node, Material material)
+    private bool SetMaterial(Node node, Material material, bool bForce = false)
     {
-        bool canSet = node.meshRenderer.sharedMaterial != gridData.startPosMat && node.meshRenderer.sharedMaterial != gridData.goalPosMat;
-        if (canSet)
+        bool canSet = node.meshRenderer.sharedMaterial != gridData.startMat && node.meshRenderer.sharedMaterial != gridData.goalMat;
+        if (canSet || bForce)
         {
             node.meshRenderer.material = material;
         }

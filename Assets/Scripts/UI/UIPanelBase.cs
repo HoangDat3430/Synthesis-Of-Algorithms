@@ -5,12 +5,6 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-public enum EventID
-{
-    None = 0,
-    ResetMap = 1,
-    FindPath = 2,
-}
 public class UIPanelBase : MonoBehaviour
 {
     public virtual void Show()
@@ -23,20 +17,21 @@ public class UIPanelBase : MonoBehaviour
     }
     public virtual void Refresh()
     {
-
     }
-    public virtual void RegisterButtonEvent(Button btn, EventID eventID)
+    public virtual void RegisterExternalEvents()
     {
-        btn.onClick.AddListener(() =>
-        {
-            UIEventBus.OnButtonClicked?.Invoke(eventID);
-        });
     }
-    public virtual void RegisterButtonEvent(Button btn, UnityEvent ev)
+    public virtual void RegisterInternalEvents()
     {
-        btn.onClick.AddListener(() =>
-        {
-            ev?.Invoke();
-        });
+    }
+    public virtual void UnregisterEvents() {}
+    protected virtual void OnEnable()
+    {
+        RegisterInternalEvents();
+        RegisterExternalEvents();
+    }
+    protected virtual void OnDisable()
+    {
+        UnregisterEvents();
     }
 }

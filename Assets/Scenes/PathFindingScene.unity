@@ -123,6 +123,57 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &6607823
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6607824}
+  - component: {fileID: 6607825}
+  m_Layer: 5
+  m_Name: PathFindingPanel
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &6607824
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6607823}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 507863166}
+  - {fileID: 2028695761}
+  m_Father: {fileID: 875782824}
+  m_RootOrder: -1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &6607825
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6607823}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c797e6948e570784cab79bfc649815b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &341581729
 GameObject:
   m_ObjectHideFlags: 0
@@ -182,9 +233,9 @@ MonoBehaviour:
         mapWidth: 16
         mapHeight: 16
         normalMat: {fileID: 2100000, guid: b2b28a9908c593c46ad054ae0ff5c36a, type: 2}
-        startPosMat: {fileID: 2100000, guid: 9f3d9e04f8141174d85e11b28032fc73, type: 2}
+        startMat: {fileID: 2100000, guid: 9f3d9e04f8141174d85e11b28032fc73, type: 2}
         desiredMat: {fileID: 2100000, guid: c6dee1c6e6014a34089cb3bc0e6287a3, type: 2}
-        goalPosMat: {fileID: 2100000, guid: 723aa6c1222c31340b04bf9a22b75f30, type: 2}
+        goalMat: {fileID: 2100000, guid: 723aa6c1222c31340b04bf9a22b75f30, type: 2}
         terrainMat:
         - {fileID: 2100000, guid: b2b28a9908c593c46ad054ae0ff5c36a, type: 2}
         - {fileID: 2100000, guid: 9cb26000d5f32db41bf4dfe690fce7ce, type: 2}
@@ -224,7 +275,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2079766398}
-  m_Father: {fileID: 875782824}
+  m_Father: {fileID: 6607824}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -417,6 +468,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 875782824}
+  - component: {fileID: 875782825}
   m_Layer: 5
   m_Name: UI
   m_TagString: Untagged
@@ -436,8 +488,7 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 507863166}
-  - {fileID: 2028695761}
+  - {fileID: 6607824}
   m_Father: {fileID: 1294278244}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -446,6 +497,21 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &875782825
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 875782823}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aea66bac22bce474c94ddde250d7e8e5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_UIEntries:
+  - UISystem: 2
+    UIPanelBase: {fileID: 6607825}
 --- !u!1 &963194225
 GameObject:
   m_ObjectHideFlags: 0
@@ -876,7 +942,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 997340640}
-  m_Father: {fileID: 875782824}
+  m_Father: {fileID: 6607824}
   m_RootOrder: -1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}

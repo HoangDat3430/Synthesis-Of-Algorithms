@@ -6,6 +6,7 @@ public interface IGrid
     public void SetGoalPos(Node node);
     public void SetTerrain(Node node, TerrainType type);
     public void Init(GridBaseData data);
-    public Vector3 GetCenter(int x, int y);
     public Node GetNodeByGameObject(GameObject go);
+    public void OnFindPath(FindPathEvent e);
+    public void OnResetMap(ResetMapEvent e);
 }

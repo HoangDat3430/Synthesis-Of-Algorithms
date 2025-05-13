@@ -3,36 +3,31 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum UISystem
-{
-    None,
-    Menu,
-    Main,
-    Settings
-}
-[Serializable]
-public struct UIEntry
-{
-    public UISystem UISystem;
-    public UIPanelBase UIPanelBase;
-}
 public class UIManager : MonoBehaviour
 {
     public static UIManager Instance { get; private set; }
-    [SerializeField] private UIEntry[] m_UIEntries;
-    private Dictionary<UISystem, UIPanelBase> m_UIPanels = new Dictionary<UISystem, UIPanelBase>();
+    [SerializeField] private Type[] m_UIEntries;
+    private Dictionary<Type, UIPanelBase> m_UIPanels = new Dictionary<Type, UIPanelBase>();
     private UIPanelBase m_CurGameUI;
     private void Awake()
     {
         Instance = this;
-        foreach (var ui in m_UIEntries)
+    }
+    public void RegisterPanel<T>(T panel, IUIEventHandler handler) where T : UIPanelBase
+    {
+        if (!m_UIPanels.ContainsKey(typeof(T)))
         {
-            m_UIPanels.Add(ui.UISystem, ui.UIPanelBase);
+            m_UIPanels[typeof(T)] = panel;
+            handler.Inject(panel);
+        }
+        else
+        {
+            Debug.LogError("This panel is already registered!");
         }
     }
-    public void ShowUI(UISystem uISystem)
+    public void ShowUI<T>()
     {
-        if (m_UIPanels.TryGetValue(uISystem, out UIPanelBase ui))
+        if (m_UIPanels.TryGetValue(typeof(T), out UIPanelBase ui))
         {
             ui.Show();
         }
@@ -41,9 +36,9 @@ public class UIManager : MonoBehaviour
             throw new Exception("Invalid UI System");
         }
     }
-    public void HideUI(UISystem uISystem)
+    public void HideUI<T>()
     {
-        if (m_UIPanels.TryGetValue(uISystem, out UIPanelBase ui))
+        if (m_UIPanels.TryGetValue(typeof(T), out UIPanelBase ui))
         {
             ui.Hide();
         }
