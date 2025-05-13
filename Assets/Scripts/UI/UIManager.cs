@@ -5,20 +5,26 @@ using UnityEngine;
 
 public class UIManager : MonoBehaviour
 {
+    [SerializeField] private UIPanelBase[] m_Panels;
     public static UIManager Instance { get; private set; }
-    [SerializeField] private Type[] m_UIEntries;
-    private Dictionary<Type, UIPanelBase> m_UIPanels = new Dictionary<Type, UIPanelBase>();
-    private UIPanelBase m_CurGameUI;
+    private Dictionary<Type, UIPanelBase> m_UIPanelDict = new Dictionary<Type, UIPanelBase>();
     private void Awake()
     {
         Instance = this;
+        Register();
+    }
+    private void Register()
+    {
+        // Register all panels here
+        Debug.LogError(2);
+        RegisterPanel(new PathFindingPanel(), new PathFindingPanelHandler());
     }
     public void RegisterPanel<T>(T panel, IUIEventHandler handler) where T : UIPanelBase
     {
-        if (!m_UIPanels.ContainsKey(typeof(T)))
+        if (!m_UIPanelDict.ContainsKey(typeof(T)))
         {
-            m_UIPanels[typeof(T)] = panel;
-            handler.Inject(panel);
+            m_UIPanelDict[typeof(T)] = panel;
+            panel.Inject(handler);
         }
         else
         {
@@ -27,7 +33,7 @@ public class UIManager : MonoBehaviour
     }
     public void ShowUI<T>()
     {
-        if (m_UIPanels.TryGetValue(typeof(T), out UIPanelBase ui))
+        if (m_UIPanelDict.TryGetValue(typeof(T), out UIPanelBase ui))
         {
             ui.Show();
         }
@@ -38,7 +44,7 @@ public class UIManager : MonoBehaviour
     }
     public void HideUI<T>()
     {
-        if (m_UIPanels.TryGetValue(typeof(T), out UIPanelBase ui))
+        if (m_UIPanelDict.TryGetValue(typeof(T), out UIPanelBase ui))
         {
             ui.Hide();
         }

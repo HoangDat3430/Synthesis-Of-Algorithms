@@ -5,8 +5,13 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-public class UIPanelBase : MonoBehaviour
+public abstract class UIPanelBase : MonoBehaviour
 {
+    protected IUIEventHandler _handler;
+    public virtual void Inject(IUIEventHandler handler)
+    {
+        _handler = handler;
+    }
     public virtual void Show()
     {
         gameObject.SetActive(true);
@@ -15,23 +20,7 @@ public class UIPanelBase : MonoBehaviour
     {
         gameObject.SetActive(false);
     }
-    public virtual void Refresh()
-    {
-    }
-    public virtual void RegisterExternalEvents()
-    {
-    }
-    public virtual void RegisterInternalEvents()
-    {
-    }
+    public virtual void Refresh(){}
+    public virtual void RegisterInternalEvents(){}
     public virtual void UnregisterEvents() {}
-    protected virtual void OnEnable()
-    {
-        RegisterInternalEvents();
-        RegisterExternalEvents();
-    }
-    protected virtual void OnDisable()
-    {
-        UnregisterEvents();
-    }
 }

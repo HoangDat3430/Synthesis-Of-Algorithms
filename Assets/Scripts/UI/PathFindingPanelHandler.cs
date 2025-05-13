@@ -4,9 +4,12 @@ using UnityEngine;
 
 public class PathFindingPanelHandler : IUIEventHandler
 {
-    private PathFindingPanel _panel;
-    public void Inject(UIPanelBase panel)
+    public void OnReset()
     {
-        _panel = (PathFindingPanel)panel;
-    } 
+        UIEventBus.Publish(new ResetMapEvent());
+    }
+    public void OnFindPath()
+    {
+        UIEventBus.Publish(new FindPathEvent());
+    }
 }
