@@ -8,9 +8,8 @@ using UnityEngine.UI;
 public abstract class UIPanelBase : MonoBehaviour
 {
     protected IUIEventHandler _handler;
-    public virtual void Inject(IUIEventHandler handler)
+    public virtual void Init()
     {
-        _handler = handler;
     }
     public virtual void Show()
     {

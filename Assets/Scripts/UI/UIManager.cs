@@ -1,50 +1,48 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.iOS;
 using UnityEngine;
 
 public class UIManager : MonoBehaviour
 {
-    [SerializeField] private UIPanelBase[] m_Panels;
     public static UIManager Instance { get; private set; }
-    private Dictionary<Type, UIPanelBase> m_UIPanelDict = new Dictionary<Type, UIPanelBase>();
+    private Dictionary<Type, UIPanelBase> m_LoadedPanels = new Dictionary<Type, UIPanelBase>();
     private void Awake()
     {
         Instance = this;
-        Register();
+        UIFactory.Registry();
+        SubscribeEvent();
     }
-    private void Register()
+    private void Start()
     {
-        // Register all panels here
-        Debug.LogError(2);
-        RegisterPanel(new PathFindingPanel(), new PathFindingPanelHandler());
+        ShowUI<PathFindingPanel>();
     }
-    public void RegisterPanel<T>(T panel, IUIEventHandler handler) where T : UIPanelBase
+    public T LoadUI<T>() where T : UIPanelBase, new()
     {
-        if (!m_UIPanelDict.ContainsKey(typeof(T)))
+        Type type = typeof(T);
+        if (!m_LoadedPanels.TryGetValue(type, out var panel))
         {
-            m_UIPanelDict[typeof(T)] = panel;
-            panel.Inject(handler);
+            panel = UIFactory.CreatePanel<T>(transform);
+            m_LoadedPanels.Add(type, panel);
         }
-        else
-        {
-            Debug.LogError("This panel is already registered!");
-        }
+        return (T)panel;
     }
-    public void ShowUI<T>()
+    public void ShowUI<T>() where T : UIPanelBase, new()
     {
-        if (m_UIPanelDict.TryGetValue(typeof(T), out UIPanelBase ui))
+        if (!m_LoadedPanels.TryGetValue(typeof(T), out UIPanelBase ui))
         {
-            ui.Show();
+            ui = LoadUI<T>();
         }
         else
         {
             throw new Exception("Invalid UI System");
         }
+        ui.Show();
     }
-    public void HideUI<T>()
+    public void HideUI<T>() where T : UIPanelBase
     {
-        if (m_UIPanelDict.TryGetValue(typeof(T), out UIPanelBase ui))
+        if (m_LoadedPanels.TryGetValue(typeof(T), out UIPanelBase ui))
         {
             ui.Hide();
         }
@@ -52,5 +50,8 @@ public class UIManager : MonoBehaviour
         {
             throw new Exception("Invalid UI System");
         }
+    }
+    private void SubscribeEvent()
+    {
     }
 }

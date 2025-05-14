@@ -6,17 +6,12 @@ using UnityEngine.UI;
 
 public class PathFindingPanel : UIPanelBase
 {
-    private PathFindingPanelHandler m_Handler;
+    public Button resetBtn;
+    public Button findPathBtn;
 
-    [SerializeField] private Button m_ResetBtn;
-    [SerializeField] private Button m_FindPathBtn;
-    private void Awake()
+    public override void Init()
     {
-    }
-    private void Start()
-    {
-        Debug.LogError(1);
-        RegisterInternalEvents();
+
     }
     public override void Show()
     {
@@ -28,7 +23,5 @@ public class PathFindingPanel : UIPanelBase
     }
     public override void RegisterInternalEvents()
     {
-        m_ResetBtn.onClick.AddListener(m_Handler.OnReset);
-        m_FindPathBtn.onClick.AddListener(m_Handler.OnFindPath);
     }
 }
