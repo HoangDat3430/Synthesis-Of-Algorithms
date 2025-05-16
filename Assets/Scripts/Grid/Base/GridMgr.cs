@@ -69,12 +69,12 @@ public class GridMgr : MonoBehaviour
     }
     private void OnEnable()
     {
-        UIEventBus.Subscribe<FindPathEvent>(_curGrid.OnFindPath);
-        UIEventBus.Subscribe<ResetMapEvent>(_curGrid.OnResetMap);
+        //UIEventBus.Subscribe<FindPathEvent>(_curGrid.OnFindPath);
+        UIEventBus.Subscribe<ResetMapEvent>(_curGrid.ResetMap);
     }
     private void OnDisable()
     {
-        UIEventBus.Unsubscribe<FindPathEvent>(_curGrid.OnFindPath);
-        UIEventBus.Unsubscribe<ResetMapEvent>(_curGrid.OnResetMap);
+        //UIEventBus.Unsubscribe<FindPathEvent>(_curGrid.OnFindPath);
+        UIEventBus.Unsubscribe<ResetMapEvent>(_curGrid.ResetMap);
     }
 }

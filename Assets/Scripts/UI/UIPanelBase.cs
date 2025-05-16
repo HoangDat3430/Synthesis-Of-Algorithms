@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 public abstract class UIPanelBase : MonoBehaviour
 {
-    protected IUIEventHandler _handler;
+    protected IUIHandler _handler;
     public virtual void Init()
     {
     }
@@ -20,6 +20,6 @@ public abstract class UIPanelBase : MonoBehaviour
         gameObject.SetActive(false);
     }
     public virtual void Refresh(){}
-    public virtual void RegisterInternalEvents(){}
-    public virtual void UnregisterEvents() {}
+    protected virtual void RegisterInternalEvents(){}
+    protected virtual void UnregisterEvents() {}
 }

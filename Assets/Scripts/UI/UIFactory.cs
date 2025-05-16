@@ -6,13 +6,13 @@ using UnityEngine;
 
 public static class UIFactory
 {
-    private static Dictionary<Type, IUIEventHandler> _panelDict = new();
+    private static Dictionary<Type, IUIHandler> _panelDict = new();
     private static Dictionary<Type, string> _panelPaths = new();
     public static void Registry()
     {
-        RegistryPanel<PathFindingPanel>(new PathFindingPanelHandler(), "Prefabs/UI/PathFindingPanel");
+        RegistryPanel<PathFindingView>(new PathFindingViewHandler(), "Prefabs/UI/PathFindingPanel");
     }
-    public static void RegistryPanel<T>(IUIEventHandler handler, string path) where T : UIPanelBase
+    public static void RegistryPanel<T>(IUIHandler handler, string path) where T : UIPanelBase
     {
         _panelDict.Add(typeof(T), handler);
         _panelPaths.Add(typeof(T), path);
@@ -33,13 +33,13 @@ public static class UIFactory
 
         GameObject instance = GameObject.Instantiate(prefab, parent);
         T panel = instance.GetComponent<T>();
-        IUIEventHandler handler = CreateHandlerFor<T>();
+        IUIHandler handler = CreateHandlerFor<T>();
         handler.AttachToPanel(panel);
         panel.Init();
         return panel;
     }
 
-    private static IUIEventHandler CreateHandlerFor<T>() where T : UIPanelBase, new()
+    private static IUIHandler CreateHandlerFor<T>() where T : UIPanelBase, new()
     {
         Type panelType = typeof(T);
         if (_panelDict.TryGetValue(panelType, out var handler))

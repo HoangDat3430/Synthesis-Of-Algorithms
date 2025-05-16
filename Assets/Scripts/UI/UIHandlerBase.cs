@@ -5,7 +5,7 @@ using UnityEngine;
 public class OnCreatePanelFinishedEvent
 {
 }
-public abstract class UIHandlerBase : IUIEventHandler
+public abstract class UIHandlerBase : IUIHandler
 {
     public virtual void AttachToPanel(UIPanelBase panel) {}
     public virtual void RegisterEvent() { }

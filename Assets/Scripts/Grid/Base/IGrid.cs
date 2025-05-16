@@ -7,6 +7,6 @@ public interface IGrid
     public void SetTerrain(Node node, TerrainType type);
     public void Init(GridBaseData data);
     public Node GetNodeByGameObject(GameObject go);
-    public void OnFindPath(FindPathEvent e);
-    public void OnResetMap(ResetMapEvent e);
+    public void FindAllPaths();
+    public void ResetMap(ResetMapEvent e);
 }

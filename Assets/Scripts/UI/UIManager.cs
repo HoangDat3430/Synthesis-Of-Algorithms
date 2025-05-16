@@ -1,7 +1,5 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.iOS;
 using UnityEngine;
 
 public class UIManager : MonoBehaviour
@@ -11,12 +9,13 @@ public class UIManager : MonoBehaviour
     private void Awake()
     {
         Instance = this;
+        DontDestroyOnLoad(gameObject);
         UIFactory.Registry();
         SubscribeEvent();
     }
     private void Start()
     {
-        ShowUI<PathFindingPanel>();
+        ShowUI<PathFindingView>();
     }
     public T LoadUI<T>() where T : UIPanelBase, new()
     {
