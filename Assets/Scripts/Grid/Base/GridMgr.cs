@@ -18,7 +18,7 @@ public class GridMgr : MonoBehaviour
 {
     public static GridMgr Instance { get; private set; }
 
-    public PathFindingType algorithm = PathFindingType.AStar;
+    public PathFindingType Algorithm = PathFindingType.AStar;
     public GridType gridType = GridType.Hexagon;
     [SerializeReference] public GridBaseData gridData;
     private IGrid _curGrid;

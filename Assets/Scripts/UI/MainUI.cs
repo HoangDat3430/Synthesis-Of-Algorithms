@@ -5,13 +5,22 @@ using UnityEngine.UI;
 
 public class MainUI : UIPanelBase
 {
+    public Transform _algorithmsPopup;
     public Button MenuBtn;
+    public Button ConfirmBtn;
+    public Button CancelBtn;
+
     public override void Init()
     {
         RegisterInternalEvents();
     }
     protected override void RegisterInternalEvents()
     {
-        base.RegisterInternalEvents();
+        MenuBtn.onClick.AddListener(() => OnSetPopupVisible(true));
+        CancelBtn.onClick.AddListener(() => OnSetPopupVisible(false));
+    }
+    private void OnSetPopupVisible(bool visible)
+    {
+        _algorithmsPopup.gameObject.SetActive(visible);
     }
 }

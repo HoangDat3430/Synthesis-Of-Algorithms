@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using UnityEngine;
 
 public static class UIFactory
@@ -10,10 +11,12 @@ public static class UIFactory
     private static Dictionary<Type, string> _panelPaths = new();
     public static void Registry()
     {
-        RegistryPanel<PathFindingView>(new PathFindingViewHandler(), "Prefabs/UI/PathFindingPanel");
+        RegistryPanel<PathFindingView>(new PathFindingViewHandler(), "PathFindingView");
+        RegistryPanel<MainUI>(new MainUIHandler(), "MainUI");
     }
-    public static void RegistryPanel<T>(IUIHandler handler, string path) where T : UIPanelBase
+    public static void RegistryPanel<T>(IUIHandler handler, string prefabName) where T : UIPanelBase
     {
+        string path = Path.Combine("Prefabs", "UI", prefabName);
         _panelDict.Add(typeof(T), handler);
         _panelPaths.Add(typeof(T), path);
     }

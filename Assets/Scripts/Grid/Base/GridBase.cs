@@ -69,21 +69,27 @@ public abstract class GridBase : IGrid
             {
                 SetMaterial(node, gridData.terrainMat[(int)node.terrain]);
             }
-            path = PathFinding.FindPath(GridMgr.Instance.algorithm, start, goal, this);
+            path = PathFinding.FindPath(GridMgr.Instance.Algorithm, start, goal, this);
         }
         return path;
     }
     public void ResetMap(ResetMapEvent e)
     {
         // reset all start node and it's path
-        foreach (var start in startNodeList.Keys)
+        if (startNodeList.Count > 0)
         {
-            ResetStartNode(start);
+            foreach (var start in startNodeList.Keys)
+            {
+                ResetStartNode(start);
+            }
+            startNodeList.Clear();
         }
-        startNodeList.Clear();
         // reset goal node
-        SetMaterial(goal, gridData.terrainMat[(int)goal.terrain], true);
-        goal = null;
+        if (goal != null)
+        {
+            SetMaterial(goal, gridData.terrainMat[(int)goal.terrain], true);
+            goal = null;
+        }
     }
     private void ResetStartNode(Node start)
     {

@@ -15,6 +15,7 @@ public class UIManager : MonoBehaviour
     }
     private void Start()
     {
+        ShowUI<MainUI>();
         ShowUI<PathFindingView>();
     }
     public T LoadUI<T>() where T : UIPanelBase, new()
