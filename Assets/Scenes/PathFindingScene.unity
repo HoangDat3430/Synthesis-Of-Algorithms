@@ -167,7 +167,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b08e60f3cdd504a43aa8689d98abba97, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  algorithm: 2
+  Algorithm: 0
   gridType: 1
   gridData:
     rid: 3973535223210311705

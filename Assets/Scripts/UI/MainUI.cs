@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class MainUI : UIPanelBase
+public class MainUI : UIPanelBase<MainUI, MainUIHandler>
 {
     public Transform _algorithmsPopup;
     public Button MenuBtn;

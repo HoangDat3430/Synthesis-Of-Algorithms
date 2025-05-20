@@ -2,12 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PathFindingViewHandler : UIHandlerBase, IUIHandler
+public class PathFindingViewHandler : UIHandlerBase<PathFindingView>
 {
     private PathFindingView m_panel;
-    public override void AttachToPanel(UIPanelBase panel)
+    public override void AttachToPanel(PathFindingView panel)
     {
-        m_panel = panel as PathFindingView;
+        m_panel = panel;
         RegisterEvent();
     }
     public override void RegisterEvent()

@@ -1,15 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 
-public abstract class UIPanelBase : MonoBehaviour
+public abstract class UIPanelBase<TPanel, THandler> : MonoBehaviour, IUIPanelBase 
+where TPanel : UIPanelBase<TPanel, THandler>, IUIPanelBase
+where THandler : IUIHandlerBase<TPanel>, new()
 {
-    protected IUIHandler _handler;
+    protected THandler _handler;
     public virtual void Init()
     {
+        _handler = new();
+        _handler.AttachToPanel((TPanel)this);
     }
     public virtual void Show()
     {

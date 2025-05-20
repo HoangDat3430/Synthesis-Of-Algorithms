@@ -7,53 +7,40 @@ using UnityEngine;
 
 public static class UIFactory
 {
-    private static Dictionary<Type, IUIHandler> _panelDict = new();
     private static Dictionary<Type, string> _panelPaths = new();
     public static void Registry()
     {
-        RegistryPanel<PathFindingView>(new PathFindingViewHandler(), "PathFindingView");
-        RegistryPanel<MainUI>(new MainUIHandler(), "MainUI");
+        RegistryPanel<PathFindingView>("PathFindingView");
+        RegistryPanel<MainUI>("MainUI");
     }
-    public static void RegistryPanel<T>(IUIHandler handler, string prefabName) where T : UIPanelBase
+    public static void RegistryPanel<T>(string prefabName)
     {
         string path = Path.Combine("Prefabs", "UI", prefabName);
-        _panelDict.Add(typeof(T), handler);
         _panelPaths.Add(typeof(T), path);
     }
-    public static T CreatePanel<T>(Transform parent) where T : UIPanelBase, new()
+    
+    public static TPanel Create<TPanel, THandler>(Transform parent)
+        where TPanel : UIPanelBase<TPanel, THandler>, IUIPanelBase
+        where THandler : IUIHandlerBase<TPanel>, new()
     {
-        Type type = typeof(T);
+        Type type = typeof(TPanel);
+        if (!_panelPaths.TryGetValue(type, out var prefabPath))
+        {
+            Debug.LogError($"UI panel not registered: {type.Name}");
+            return null;
+        }
 
-        string prefabPath = _panelPaths[type];
-
-        // Tải prefab từ Resources hoặc Addressables
         GameObject prefab = Resources.Load<GameObject>(prefabPath);
         if (prefab == null)
         {
-            Debug.LogError($"Prefab không tồn tại tại path: {prefabPath}");
+            Debug.LogError($"Prefab not found at path: {prefabPath}");
             return null;
         }
 
         GameObject instance = GameObject.Instantiate(prefab, parent);
-        T panel = instance.GetComponent<T>();
-        IUIHandler handler = CreateHandlerFor<T>();
-        handler.AttachToPanel(panel);
+        TPanel panel = instance.GetComponent<TPanel>();
         panel.Init();
         return panel;
-    }
-
-    private static IUIHandler CreateHandlerFor<T>() where T : UIPanelBase, new()
-    {
-        Type panelType = typeof(T);
-        if (_panelDict.TryGetValue(panelType, out var handler))
-        {
-            return handler;
-        }
-        else
-        {
-            Debug.LogError("UI Panel was not registered");
-            return null;
-        }
     }
 }
 

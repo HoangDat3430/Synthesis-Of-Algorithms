@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.EventSystems;
 
 public enum GridType
 {
@@ -37,6 +38,12 @@ public class GridMgr : MonoBehaviour
 
     private void Update()
     {
+        // Check if the mouse is raycast on an UI component
+        if (EventSystem.current.IsPointerOverGameObject())
+        {
+            return;
+        }
+        // Input logics
         bool isSetStartPos = Input.GetMouseButtonUp(0);
         bool isSetGoalPos = Input.GetMouseButtonUp(1);
         if (isSetStartPos || isSetGoalPos)
@@ -56,6 +63,7 @@ public class GridMgr : MonoBehaviour
                 }
             }
         }
+        // Set terrain
         if (Input.GetKeyDown(KeyCode.Alpha0) || Input.GetKeyDown(KeyCode.Alpha1) || Input.GetKeyDown(KeyCode.Alpha2) || Input.GetKeyDown(KeyCode.Alpha3) || Input.GetKeyDown(KeyCode.Alpha4))
         {
             RaycastHit hitInfo;

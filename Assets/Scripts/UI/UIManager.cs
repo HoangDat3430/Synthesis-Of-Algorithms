@@ -5,7 +5,7 @@ using UnityEngine;
 public class UIManager : MonoBehaviour
 {
     public static UIManager Instance { get; private set; }
-    private Dictionary<Type, UIPanelBase> m_LoadedPanels = new Dictionary<Type, UIPanelBase>();
+    private Dictionary<Type, IUIPanelBase> m_LoadedPanels = new Dictionary<Type, IUIPanelBase>();
     private void Awake()
     {
         Instance = this;
@@ -15,24 +15,27 @@ public class UIManager : MonoBehaviour
     }
     private void Start()
     {
-        ShowUI<MainUI>();
-        ShowUI<PathFindingView>();
+        ShowUI<PathFindingView, PathFindingViewHandler>();
     }
-    public T LoadUI<T>() where T : UIPanelBase, new()
+    public TPanel LoadUI<TPanel, THandler>()
+        where TPanel : UIPanelBase<TPanel,THandler>
+        where THandler : IUIHandlerBase<TPanel>, new()
     {
-        Type type = typeof(T);
+        Type type = typeof(TPanel);
         if (!m_LoadedPanels.TryGetValue(type, out var panel))
         {
-            panel = UIFactory.CreatePanel<T>(transform);
+            panel = UIFactory.Create<TPanel, THandler>(transform);
             m_LoadedPanels.Add(type, panel);
         }
-        return (T)panel;
+        return (TPanel)panel;
     }
-    public void ShowUI<T>() where T : UIPanelBase, new()
+    public void ShowUI<TPanel, THandler>()
+        where TPanel : UIPanelBase<TPanel,THandler>
+        where THandler : IUIHandlerBase<TPanel>, new()
     {
-        if (!m_LoadedPanels.TryGetValue(typeof(T), out UIPanelBase ui))
+        if (!m_LoadedPanels.TryGetValue(typeof(TPanel), out IUIPanelBase ui))
         {
-            ui = LoadUI<T>();
+            ui = LoadUI<TPanel, THandler>();
         }
         else
         {
@@ -40,9 +43,11 @@ public class UIManager : MonoBehaviour
         }
         ui.Show();
     }
-    public void HideUI<T>() where T : UIPanelBase
+    public void HideUI<TPanel, THandler>()
+        where TPanel : UIPanelBase<TPanel,THandler>
+        where THandler : IUIHandlerBase<TPanel>, new()
     {
-        if (m_LoadedPanels.TryGetValue(typeof(T), out UIPanelBase ui))
+        if (m_LoadedPanels.TryGetValue(typeof(TPanel), out IUIPanelBase ui))
         {
             ui.Hide();
         }

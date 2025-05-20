@@ -4,7 +4,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PathFindingView : UIPanelBase
+public class PathFindingView : UIPanelBase<PathFindingView, PathFindingViewHandler>
 {
     public Button resetBtn;
 }
