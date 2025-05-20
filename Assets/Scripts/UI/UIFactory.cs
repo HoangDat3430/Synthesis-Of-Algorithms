@@ -7,37 +7,42 @@ using UnityEngine;
 
 public static class UIFactory
 {
-    private static Dictionary<Type, string> _panelPaths = new();
+    private static readonly Dictionary<Type, Func<object>> _panelToHandlerMap = new();
+    private static Dictionary<Type, string> _panelPathMap = new();
     public static void Registry()
     {
-        RegistryPanel<PathFindingView>("PathFindingView");
-        RegistryPanel<MainUI>("MainUI");
+        RegistryPanel<PathFindingView, PathFindingViewHandler>("PathFindingView");
+        RegistryPanel<MainUI, MainUIHandler>("MainUI");
     }
-    public static void RegistryPanel<T>(string prefabName)
-    {
-        string path = Path.Combine("Prefabs", "UI", prefabName);
-        _panelPaths.Add(typeof(T), path);
-    }
-    
-    public static TPanel Create<TPanel, THandler>(Transform parent)
-        where TPanel : UIPanelBase<TPanel, THandler>, IUIPanelBase
+    public static void RegistryPanel<TPanel, THandler>(string prefabName) 
+        where TPanel : IUIPanelBase
         where THandler : IUIHandlerBase<TPanel>, new()
     {
+        string path = Path.Combine("Prefabs", "UI", prefabName);
+        _panelPathMap.Add(typeof(TPanel), path);
+        _panelToHandlerMap.Add(typeof(TPanel), () => new THandler());
+    }
+    
+    public static TPanel Create<TPanel>(Transform parent)
+        where TPanel : IUIPanelBase
+    {
         Type type = typeof(TPanel);
-        if (!_panelPaths.TryGetValue(type, out var prefabPath))
+        if (!_panelPathMap.TryGetValue(type, out var prefabPath))
         {
-            Debug.LogError($"UI panel not registered: {type.Name}");
-            return null;
+            throw new Exception($"UI panel not registered: {type.Name}");
         }
 
         GameObject prefab = Resources.Load<GameObject>(prefabPath);
         if (prefab == null)
         {
-            Debug.LogError($"Prefab not found at path: {prefabPath}");
-            return null;
+            throw new Exception($"Prefab not found at path: {prefabPath}");
         }
 
         GameObject instance = GameObject.Instantiate(prefab, parent);
+        if(!_panelToHandlerMap.TryGetValue(type, out var handlerType))
+        {
+            throw new Exception($"UI handler not registered for panel: {type.Name}");
+        }
         TPanel panel = instance.GetComponent<TPanel>();
         panel.Init();
         return panel;

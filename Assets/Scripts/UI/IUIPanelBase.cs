@@ -4,6 +4,7 @@ using UnityEngine;
 
 public interface IUIPanelBase
 {
+    void Init();
     void Show();
     void Hide();
 }

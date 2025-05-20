@@ -14,4 +14,8 @@ public class MainUIHandler : UIHandlerBase<MainUI>
     public override void RegisterEvent()
     {
     }
+    public void SayHello()
+    {
+        Debug.Log("Hello from MainUIHandler!");
+    }
 }

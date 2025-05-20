@@ -12,7 +12,7 @@ public class MainUI : UIPanelBase<MainUI, MainUIHandler>
 
     public override void Init()
     {
-        RegisterInternalEvents();
+        base.Init();
     }
     protected override void RegisterInternalEvents()
     {

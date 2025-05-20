@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using TMPro.EditorUtilities;
 using UnityEngine;
 
 public class UIManager : MonoBehaviour
@@ -15,27 +16,27 @@ public class UIManager : MonoBehaviour
     }
     private void Start()
     {
-        ShowUI<PathFindingView, PathFindingViewHandler>();
+        ShowUI<PathFindingView>();
+        ShowUI<MainUI>();
+        GetPanel<MainUI>().Handler.SayHello();
     }
-    public TPanel LoadUI<TPanel, THandler>()
-        where TPanel : UIPanelBase<TPanel,THandler>
-        where THandler : IUIHandlerBase<TPanel>, new()
+    public TPanel LoadUI<TPanel>()
+        where TPanel : IUIPanelBase
     {
         Type type = typeof(TPanel);
         if (!m_LoadedPanels.TryGetValue(type, out var panel))
         {
-            panel = UIFactory.Create<TPanel, THandler>(transform);
+            panel = UIFactory.Create<TPanel>(transform);
             m_LoadedPanels.Add(type, panel);
         }
         return (TPanel)panel;
     }
-    public void ShowUI<TPanel, THandler>()
-        where TPanel : UIPanelBase<TPanel,THandler>
-        where THandler : IUIHandlerBase<TPanel>, new()
+    public void ShowUI<TPanel>()
+        where TPanel : IUIPanelBase
     {
         if (!m_LoadedPanels.TryGetValue(typeof(TPanel), out IUIPanelBase ui))
         {
-            ui = LoadUI<TPanel, THandler>();
+            ui = LoadUI<TPanel>();
         }
         else
         {
@@ -43,9 +44,8 @@ public class UIManager : MonoBehaviour
         }
         ui.Show();
     }
-    public void HideUI<TPanel, THandler>()
-        where TPanel : UIPanelBase<TPanel,THandler>
-        where THandler : IUIHandlerBase<TPanel>, new()
+    public void HideUI<TPanel>()
+        where TPanel : IUIPanelBase
     {
         if (m_LoadedPanels.TryGetValue(typeof(TPanel), out IUIPanelBase ui))
         {
@@ -54,6 +54,18 @@ public class UIManager : MonoBehaviour
         else
         {
             throw new Exception("Invalid UI System");
+        }
+    }
+    public TPanel GetPanel<TPanel>() where TPanel : IUIPanelBase
+    {
+        Type panel = typeof(TPanel);
+        if (m_LoadedPanels.TryGetValue(panel, out IUIPanelBase ui))
+        {
+            return (TPanel)ui;
+        }
+        else
+        {
+            throw new Exception($"UI {panel.Name} hasn't been loaded");
         }
     }
     private void SubscribeEvent()
