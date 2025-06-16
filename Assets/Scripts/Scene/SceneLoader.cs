@@ -2,7 +2,6 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using Cysharp.Threading.Tasks;
 using System;
-using System.Collections.Generic;
 
 public static class SceneLoader
 {
