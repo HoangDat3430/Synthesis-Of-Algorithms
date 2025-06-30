@@ -19,6 +19,7 @@ public class HexGrid : GridBase
 
         mesh.vertices = SetVertices(7, x, y);
         mesh.triangles = new int[] { 0, 1, 6, 0, 6, 5, 0, 5, 4, 0, 4, 3, 0, 3, 2, 0, 2, 1 };
+        mesh.uv = SetUVs();
 
         mesh.RecalculateNormals();
         mesh.RecalculateBounds();
@@ -26,6 +27,19 @@ public class HexGrid : GridBase
         MeshCollider meshCollider = newGrid.AddComponent<MeshCollider>();
         meshCollider.sharedMesh = mesh;
         meshCollider.convex = true;
+    }
+    private Vector2[] SetUVs()
+    {
+        Vector2[] uvs = new Vector2[7]; 
+        uvs[0] = new Vector2(0.5f, 0.5f);
+        for (int i = 0; i < 6; i++)
+        {
+            float angle = i * Mathf.Deg2Rad * 60; // chuyển sang radian
+            float u = 0.5f + Mathf.Cos(angle) * 0.5f;
+            float v = 0.5f + Mathf.Sin(angle) * 0.5f;
+            uvs[i + 1] = new Vector2(u, v);
+        }
+        return uvs;
     }
     private Vector3[] SetVertices(int verticesCount, int x, int y)
     {

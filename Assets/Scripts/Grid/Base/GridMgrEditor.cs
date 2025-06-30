@@ -15,7 +15,7 @@ public class GridDataHolderEditor : Editor
     private void OnEnable()
     {
         gridMgr = (GridMgr)target;
-        algorithmProp = serializedObject.FindProperty("algorithm");
+        algorithmProp = serializedObject.FindProperty("Algorithm");
         gridTypeProp = serializedObject.FindProperty("gridType");
         gridDataProp = serializedObject.FindProperty("gridData");
 

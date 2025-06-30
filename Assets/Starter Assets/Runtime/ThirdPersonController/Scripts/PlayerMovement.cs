@@ -33,11 +33,11 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.LeftShift) && !isDashing)
+        if (!isDashing)
         {
             HandleMovement();
         }
-        else
+        if(Input.GetKeyDown(KeyCode.LeftShift) && canDash)
         {
             StartCoroutine(Dash());
         }

@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -91,6 +91,13 @@ namespace StarterAssets
         private float _verticalVelocity;
         private float _terminalVelocity = 53.0f;
 
+        Vector3 _moveDir = Vector3.zero;   
+        bool isDashing = false;
+        bool canDash = true;
+        float dashSpd = 20f;
+        float dashDuration = .3f;
+        float dashCooldown = .5f;
+
         // timeout deltatime
         private float _jumpTimeoutDelta;
         private float _fallTimeoutDelta;
@@ -162,7 +169,14 @@ namespace StarterAssets
 
             JumpAndGravity();
             GroundedCheck();
-            Move();
+            if (!isDashing)
+            {
+                Move();
+            }
+            if (Input.GetKeyDown(KeyCode.LeftShift) && canDash)
+            {
+                StartCoroutine(Dash());
+            }
         }
 
         private void LateUpdate()
@@ -269,10 +283,10 @@ namespace StarterAssets
             }
 
 
-            Vector3 moveDir = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
+            _moveDir = Quaternion.Euler(0.0f, _targetRotation, 0.0f) * Vector3.forward;
 
             // move the player
-            _controller.Move(moveDir.normalized * (_speed * Time.deltaTime) +
+            _controller.Move(_moveDir.normalized * (_speed * Time.deltaTime) +
                              new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
 
             // update animator if using character
@@ -281,6 +295,21 @@ namespace StarterAssets
                 _animator.SetFloat(_animIDSpeed, _animationBlend);
                 _animator.SetFloat(_animIDMotionSpeed, inputMagnitude);
             }
+        }
+        IEnumerator Dash()
+        {
+            isDashing = true;
+            canDash = false;
+            float elapsed = 0f;
+            while (elapsed <= dashDuration)
+            {
+                _controller.Move(_moveDir.normalized * dashSpd * Time.deltaTime);
+                elapsed += Time.deltaTime;
+                yield return null;
+            }
+            isDashing = false;
+            yield return new WaitForSeconds(dashCooldown);
+            canDash = true;
         }
         private void JumpAndGravity()
         {
