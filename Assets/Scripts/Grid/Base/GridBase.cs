@@ -120,6 +120,14 @@ public abstract class GridBase : IGrid
         }
         return canSet;
     }
+    private void SetPropertiesBlock(Node node)
+    {
+        MeshRenderer meshRenderer = node.meshRenderer;
+        MaterialPropertyBlock block = new MaterialPropertyBlock();
+        block.SetFloat("_TileCount", gridData.mapWidth * gridData.mapHeight);
+        block.SetVector("_TileIndex", new Vector2(node.Position.x, node.Position.y));
+        meshRenderer.SetPropertyBlock(block);
+    }
     private void ShowPaths()
     {
         foreach (var data in startNodeList)

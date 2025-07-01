@@ -34,7 +34,7 @@ public class HexGrid : GridBase
         uvs[0] = new Vector2(0.5f, 0.5f);
         for (int i = 0; i < 6; i++)
         {
-            float angle = i * Mathf.Deg2Rad * 60; // chuyển sang radian
+            float angle = i * Mathf.Deg2Rad * 60;
             float u = 0.5f + Mathf.Cos(angle) * 0.5f;
             float v = 0.5f + Mathf.Sin(angle) * 0.5f;
             uvs[i + 1] = new Vector2(u, v);
