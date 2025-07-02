@@ -117,6 +117,7 @@ public abstract class GridBase : IGrid
         if (canSet || bForce)
         {
             node.meshRenderer.material = material;
+            SetPropertiesBlock(node);
         }
         return canSet;
     }
@@ -124,7 +125,7 @@ public abstract class GridBase : IGrid
     {
         MeshRenderer meshRenderer = node.meshRenderer;
         MaterialPropertyBlock block = new MaterialPropertyBlock();
-        block.SetFloat("_TileCount", gridData.mapWidth * gridData.mapHeight);
+        block.SetVector("_GridSize", new Vector2(gridData.mapWidth, gridData.mapHeight));
         block.SetVector("_TileIndex", new Vector2(node.Position.x, node.Position.y));
         meshRenderer.SetPropertyBlock(block);
     }

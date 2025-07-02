@@ -18,8 +18,8 @@ public class SquareGrid : GridBase
         newGrid.AddComponent<MeshRenderer>().material = gridData.normalMat;
 
         mesh.vertices = SetVertices(4, x, y);
-        mesh.triangles = new int[] { 0, 3, 2, 2, 1, 0 };
-
+        mesh.triangles = new int[] { 0, 1, 2, 2, 3, 0 };
+        mesh.uv = SetUVs();
         mesh.RecalculateNormals();
         mesh.RecalculateBounds();
 
@@ -27,20 +27,34 @@ public class SquareGrid : GridBase
         meshCollider.sharedMesh = mesh;
         meshCollider.convex = true;
     }
+    private Vector2[] SetUVs()
+    {
+        Vector2[] uvs = new Vector2[4]; 
+        uvs[0] = new Vector2(0, 0);
+        uvs[1] = new Vector2(0, 1);
+        uvs[2] = new Vector2(1, 1);
+        uvs[3] = new Vector2(1, 0);
+        return uvs;
+    }
     private Vector3[] SetVertices(int verticesCount, int x, int y)
     {
         float radius = gridData.edgeSize * Mathf.Sqrt(2) / 2;
-        Vector3 center = new Vector3(x + radius, 0, y + radius);
-        float angleOffset = 45; // place the first vertex of a square is on the top-right => cos(45) 
+        //Vector3 center = new Vector3(x + radius, 0, y + radius);
+        //float angleOffset = 45; // place the first vertex of a square is on the top-right => cos(45) 
         Vector3[] vertices = new Vector3[verticesCount];
-        for (int i = 0; i < verticesCount; i++)
-        {
-            var angleDeg = i * 90 + angleOffset; // each vertex is 90 degree apart
-            var angleRad = Mathf.Deg2Rad * angleDeg;
-            float posX = center.x + (radius - gridData.gridSpacing) * (float)Mathf.Cos(angleRad);
-            float posY = center.z + (radius - gridData.gridSpacing) * (float)Mathf.Sin(angleRad);
-            vertices[i] = new Vector3(posX, 0, posY);
-        }
+        // for (int i = 0; i < verticesCount; i++)
+        // {
+        //     var angleDeg = i * 90 + angleOffset; // each vertex is 90 degree apart
+        //     var angleRad = Mathf.Deg2Rad * angleDeg;
+        //     float posX = center.x + (radius - gridData.gridSpacing) * (float)Mathf.Cos(angleRad);
+        //     float posY = center.z + (radius - gridData.gridSpacing) * (float)Mathf.Sin(angleRad);
+        //     vertices[i] = new Vector3(posX, 0, posY);
+        // }
+        vertices[0] = new Vector3(x, 0, y);
+        vertices[1] = new Vector3(x, 0, y + gridData.edgeSize);
+        vertices[2] = new Vector3(x + gridData.edgeSize, 0, y + gridData.edgeSize);
+        vertices[3] = new Vector3(x + gridData.edgeSize, 0, y);
+
         return vertices;
     }
     private Vector2Int[] GetNeighborDir(Node node)

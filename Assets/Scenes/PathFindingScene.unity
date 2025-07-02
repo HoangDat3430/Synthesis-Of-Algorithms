@@ -168,19 +168,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Algorithm: 0
-  gridType: 1
+  gridType: 0
   gridData:
-    rid: 3973535223210311705
+    rid: 3765346886482919428
   references:
     version: 2
     RefIds:
-    - rid: 3973535223210311705
-      type: {class: HexGridData, ns: , asm: Assembly-CSharp}
+    - rid: 3765346886482919428
+      type: {class: SquareGridData, ns: , asm: Assembly-CSharp}
       data:
         edgeSize: 1
-        gridSpacing: 0.1
-        mapWidth: 16
-        mapHeight: 16
+        gridSpacing: 0
+        mapWidth: 2
+        mapHeight: 2
         normalMat: {fileID: 2100000, guid: b2b28a9908c593c46ad054ae0ff5c36a, type: 2}
         startMat: {fileID: 2100000, guid: 9f3d9e04f8141174d85e11b28032fc73, type: 2}
         desiredMat: {fileID: 2100000, guid: c6dee1c6e6014a34089cb3bc0e6287a3, type: 2}
@@ -191,7 +191,7 @@ MonoBehaviour:
         - {fileID: 2100000, guid: bdd07ea6dc6f238489da0ae91fbcbcda, type: 2}
         - {fileID: 2100000, guid: 93dc128d5af1ffd4e907db4e44e30a15, type: 2}
         - {fileID: 2100000, guid: c7344c3c6d5e0784eafcbe99d3d9156b, type: 2}
-        hexType: 0
+        isEightDir: 0
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0
@@ -202,6 +202,7 @@ GameObject:
   m_Component:
   - component: {fileID: 705507995}
   - component: {fileID: 705507994}
+  - component: {fileID: 705507996}
   m_Layer: 0
   m_Name: Directional Light
   m_TagString: Untagged
@@ -286,6 +287,29 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+--- !u!114 &705507996
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 705507993}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 474bcb49853aa07438625e644c072ee6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Version: 3
+  m_UsePipelineSettings: 1
+  m_AdditionalLightsShadowResolutionTier: 2
+  m_LightLayerMask: 1
+  m_RenderingLayers: 1
+  m_CustomShadowLayers: 0
+  m_ShadowLayerMask: 1
+  m_ShadowRenderingLayers: 1
+  m_LightCookieSize: {x: 1, y: 1}
+  m_LightCookieOffset: {x: 0, y: 0}
+  m_SoftShadowQuality: 0
 --- !u!1 &875782823
 GameObject:
   m_ObjectHideFlags: 0
