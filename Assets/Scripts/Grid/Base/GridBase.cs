@@ -153,6 +153,7 @@ public abstract class GridBase : IGrid
             for (int x = 0; x < gridData.mapWidth; x++)
             {
                 gridMap[x, y] = GenSingleNode(x, y);
+                SetTerrain(gridMap[x, y], TerrainType.Water);
             }
         }
     }

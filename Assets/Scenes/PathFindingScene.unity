@@ -179,8 +179,8 @@ MonoBehaviour:
       data:
         edgeSize: 1
         gridSpacing: 0
-        mapWidth: 2
-        mapHeight: 2
+        mapWidth: 32
+        mapHeight: 16
         normalMat: {fileID: 2100000, guid: b2b28a9908c593c46ad054ae0ff5c36a, type: 2}
         startMat: {fileID: 2100000, guid: 9f3d9e04f8141174d85e11b28032fc73, type: 2}
         desiredMat: {fileID: 2100000, guid: c6dee1c6e6014a34089cb3bc0e6287a3, type: 2}
