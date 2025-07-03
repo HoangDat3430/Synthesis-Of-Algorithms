@@ -20,8 +20,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: WaterTile
-  m_Shader: {fileID: 4800000, guid: 5c52b25dd0e38454988e58255b6b3b4d, type: 3}
+  m_Name: Waves
+  m_Shader: {fileID: 4800000, guid: cfe10f10b4efc2a46b9b82874cb513fa, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -62,7 +62,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: 92041c9083e5e4249919b6c06fcb2210, type: 3}
+        m_Texture: {fileID: 2800000, guid: c5778342b461ee44a82f6be521cb7465, type: 3}
         m_Scale: {x: 0.1, y: 0.1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:

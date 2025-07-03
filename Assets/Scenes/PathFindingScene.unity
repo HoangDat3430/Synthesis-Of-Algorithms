@@ -187,7 +187,7 @@ MonoBehaviour:
         goalMat: {fileID: 2100000, guid: 723aa6c1222c31340b04bf9a22b75f30, type: 2}
         terrainMat:
         - {fileID: 2100000, guid: b2b28a9908c593c46ad054ae0ff5c36a, type: 2}
-        - {fileID: 2100000, guid: 9cb26000d5f32db41bf4dfe690fce7ce, type: 2}
+        - {fileID: 2100000, guid: c28ae357bf1b6b341b94d4c01b8e33f5, type: 2}
         - {fileID: 2100000, guid: bdd07ea6dc6f238489da0ae91fbcbcda, type: 2}
         - {fileID: 2100000, guid: 93dc128d5af1ffd4e907db4e44e30a15, type: 2}
         - {fileID: 2100000, guid: c7344c3c6d5e0784eafcbe99d3d9156b, type: 2}
