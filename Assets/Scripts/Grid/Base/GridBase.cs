@@ -11,6 +11,8 @@ public abstract class GridBase : IGrid
     public Node goal;
     public void SetStartPos(Node newStartNode)
     {
+        SetPropertiesBlock(newStartNode, true, ("_TouchPoint", newStartNode.Position));
+        return;
         if (goal != newStartNode)
         {
             // For toggle a start node
@@ -117,16 +119,30 @@ public abstract class GridBase : IGrid
         if (canSet || bForce)
         {
             node.meshRenderer.material = material;
-            SetPropertiesBlock(node);
+            SetPropertiesBlock(node, false, ("_GridSize", new Vector2(gridData.mapWidth, gridData.mapHeight)), ("_TileIndex", node.Position));
         }
         return canSet;
     }
-    private void SetPropertiesBlock(Node node)
+    private void SetPropertiesBlock(Node node, bool bGlobal, params (string, Vector2)[] param)
     {
         MeshRenderer meshRenderer = node.meshRenderer;
         MaterialPropertyBlock block = new MaterialPropertyBlock();
-        block.SetVector("_GridSize", new Vector2(gridData.mapWidth, gridData.mapHeight));
-        block.SetVector("_TileIndex", new Vector2(node.Position.x, node.Position.y));
+        for (int i = 0; i < param.Length; i++)
+        {
+            string property = param[i].Item1;
+            Vector2 data = param[i].Item2;
+            if (bGlobal)
+            {
+                Debug.LogError(property);
+                Debug.LogError(data);
+                Shader.SetGlobalVector(property, data);
+                return;
+            }
+            else
+            {
+                block.SetVector(property, data);
+            }
+        }
         meshRenderer.SetPropertyBlock(block);
     }
     private void ShowPaths()

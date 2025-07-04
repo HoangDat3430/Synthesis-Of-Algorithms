@@ -8,7 +8,6 @@ Shader "Unlit/Custom/Water"
         _GridSize ("GridSize", Vector) = (0,0,0,0)
         _Frequency ("Frequency", float) = 0
         _Amplitude ("Amplitude", float) = 0
-        _TouchPoint ("Touch Point", Vector) = (0,0,0,0)
     }
     SubShader
     {
@@ -56,10 +55,8 @@ Shader "Unlit/Custom/Water"
                 v2f o;
                 float2 uv = GetPositionOnTexture(v.uv);
                 
-                _TouchPoint = float4(_GridSize.x/2, _GridSize.y/2, 0, 0);
-
-                float2 waveDir = distance(_TouchPoint, _TileIndex);
-                float wavePhase = dot(uv, waveDir) * _Frequency - _Time.y * _Speed.xy;
+                float2 dist = distance(uv, _TouchPoint / _GridSize);
+                float wavePhase = dist * _Frequency - _Time.y * _Speed.xy;
                 float wave = sin(wavePhase);
                 v.vertex.y += wave * _Amplitude;
 
