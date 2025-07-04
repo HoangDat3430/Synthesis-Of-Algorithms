@@ -8,6 +8,7 @@ Shader "Unlit/Custom/Waves"
         _GridSize ("GridSize", Vector) = (0,0,0,0)
         _Frequency ("Frequency", float) = 0
         _Amplitude ("Amplitude", float) = 0
+        [Toggle]_Flag("Is Flag", float) = 1.0
     }
     SubShader
     {
@@ -16,11 +17,12 @@ Shader "Unlit/Custom/Waves"
 
         Pass
         {
-            CGPROGRAM
+            HLSLPROGRAM
             #pragma vertex vert
             #pragma fragment frag
 
-            #include "UnityCG.cginc"
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
 
             struct appdata
             {
@@ -34,13 +36,15 @@ Shader "Unlit/Custom/Waves"
                 float4 pos : SV_POSITION;
             };
 
-            sampler2D _MainTex;
+            TEXTURE2D(_MainTex);
+            SAMPLER(sampler_MainTex);
             float4 _MainTex_ST;
             float4 _Speed;
-            Vector _GridSize;
-            Vector _TileIndex;
+            float4 _GridSize;
+            float4 _TileIndex;
             float _Frequency;
             float _Amplitude;
+            float _Flag;
             
             float2 GetPositionOnTexture(float2 uv)
             {
@@ -51,23 +55,32 @@ Shader "Unlit/Custom/Waves"
             {
                 v2f o;
                 float2 uv = GetPositionOnTexture(v.uv);
-
+                
+                float ampScale = 1;
+                if(_Flag == 1)
+                {
+                    ampScale = v.vertex.x / _GridSize;
+                }
+                else
+                {
+                    uv += _Speed.xy * _Time.x;
+                }
                 float2 waveDir = normalize(float2(1.0, 0.0));
                 float wavePhase = dot(uv, waveDir) * _Frequency - _Time.y * _Speed.xy;
                 float wave = sin(wavePhase);
-                v.vertex.y += wave * _Amplitude * v.vertex.x;
+                v.vertex.y += wave * _Amplitude * ampScale;
 
                 o.uv = uv;
                 
-                o.pos = UnityObjectToClipPos(v.vertex);
+                o.pos = TransformObjectToHClip(v.vertex);
                 return o;
             }
             
-            fixed4 frag (v2f i) : SV_Target
+            half4 frag (v2f i) : SV_Target
             {
-                return tex2D(_MainTex, i.uv);
+                return SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, i.uv);
             }
-            ENDCG
+            ENDHLSL
         }
     }
 }
