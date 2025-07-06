@@ -1,4 +1,4 @@
-Shader "Unlit/Custom/Water"
+Shader "Unlit/Custom/Water_Test"
 {
     Properties
     {
@@ -6,8 +6,11 @@ Shader "Unlit/Custom/Water"
         _Speed ("Scroll Speed", Vector) = (1,0,0,0)
         _TileIndex ("Tile Index", Vector) = (0,0,0,0)
         _GridSize ("GridSize", Vector) = (0,0,0,0)
+        _TouchPoint ("Touch Point", Vector) = (0,0,0,0)
         _Frequency ("Frequency", float) = 0
         _Amplitude ("Amplitude", float) = 0
+        _Width ("Wave Width", float) = 0
+        _FakeTime ("Fake Time", Range(0,10)) = 0
     }
     SubShader
     {
@@ -43,8 +46,9 @@ Shader "Unlit/Custom/Water"
             float4 _TileIndex;
             float _Frequency;
             float _Amplitude;
-            float4 _TouchPoint;
-            float2 _FakeTime;
+            float4 _TouchPoint = (0,0,0,0);
+            float _Width;
+            float _FakeTime;
             
             float2 GetPositionOnTexture(float2 uv)
             {
@@ -54,19 +58,28 @@ Shader "Unlit/Custom/Water"
             v2f vert (appdata v)
             {
                 v2f o;
-                float2 uv = GetPositionOnTexture(v.uv);
+                float3 uv = TransformObjectToWorld(v.vertex);
                 
-                float dist = distance(uv, _TouchPoint / _GridSize);
-                float radius = _FakeTime.x * _Speed.x;
+                float r = distance(uv, _TouchPoint.xyz);
+                float k = 2 * PI / _Width;
+                float omega = 2 * PI * _Frequency;
+                float t = _FakeTime * _Speed.x;
+
+                float radius = _FakeTime * _Speed.x;
                 float wave = 0;
-                if(dist == radius)
+
+                if(abs(r-radius) > .2)
                 {
-                    float wavePhase = dist * _Frequency - _Time.y * _Speed.x;
-                    wave = sin(wavePhase);
+                    wave = 0;
+                }
+                else
+                {
+                    float phase = r * omega - t;
+                    wave = sin(phase);
                 }
                 v.vertex.y += wave * _Amplitude;
 
-                o.uv = uv;
+                o.uv = v.uv;
                 
                 o.pos = TransformObjectToHClip(v.vertex);
                 return o;

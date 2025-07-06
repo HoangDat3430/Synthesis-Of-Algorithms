@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -12,6 +13,7 @@ public abstract class GridBase : IGrid
     public void SetStartPos(Node newStartNode)
     {
         SetPropertiesBlock(newStartNode, true, ("_TouchPoint", newStartNode.Position));
+        GridMgr.Instance.StartCoroutine(StartWave(1f));
         return;
         if (goal != newStartNode)
         {
@@ -48,6 +50,17 @@ public abstract class GridBase : IGrid
             FindAllPaths();
             ShowPaths();
         }
+    }
+    private IEnumerator StartWave(float delay)
+    {
+        float start = 0;
+        while (start < delay)
+        {
+            start += 0.1f;
+            SetPropertiesBlock(gridMap[0,0], true, ("_FakeTime", new Vector2(start, 0)));
+            yield return new WaitForSeconds(0.1f);
+        }
+        yield return null;
     }
     public void FindAllPaths()
     {
