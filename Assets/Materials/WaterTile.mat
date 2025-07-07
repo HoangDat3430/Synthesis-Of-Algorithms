@@ -21,7 +21,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: WaterTile
-  m_Shader: {fileID: 4800000, guid: 5c52b25dd0e38454988e58255b6b3b4d, type: 3}
+  m_Shader: {fileID: 4800000, guid: c6cd3fa458e00fb4daa26847fb57d64a, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
