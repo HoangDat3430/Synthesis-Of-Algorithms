@@ -63,8 +63,8 @@ Shader "Unlit/Custom/Water_Test"
                 float r = distance(uv, _TouchPoint / _GridSize);
                 float radius = _FakeTime.x * _Speed.x;
                 float diff = _Width * (r - radius);
-                float fade = saturate(1.0 - _FakeTime.x / 2);
-                float wave = exp(-diff * diff) * sin(diff * _Frequency) * fade;
+                float lamda = diff * _Width;
+                float wave = exp(-lamda * lamda) * sin(diff);
                 v.vertex.y += wave * _Amplitude;
 
                 o.uv = uv;
