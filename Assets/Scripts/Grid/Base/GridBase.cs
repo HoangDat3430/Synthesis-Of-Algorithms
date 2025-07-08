@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using UnityEditor;
 using UnityEngine;
 
 public class FindPathEvent{}
@@ -10,6 +12,7 @@ public abstract class GridBase : IGrid
     public Node[,] gridMap;
     public Dictionary<Node, List<Node>> startNodeList = new Dictionary<Node, List<Node>>();
     public Node goal;
+    protected List<CombineInstance> _submeshes = new();
     public void SetStartPos(Node newStartNode)
     {
         SetPropertiesBlock(newStartNode, true, ("_TouchPoint", newStartNode.Position));
@@ -30,7 +33,7 @@ public abstract class GridBase : IGrid
                 startNodeList[newStartNode] = new List<Node>();
                 if (goal != null)
                 {
-                    startNodeList[newStartNode] = FindPathOfNode(newStartNode);                
+                    startNodeList[newStartNode] = FindPathOfNode(newStartNode);
                 }
             }
             ShowPaths();
@@ -173,6 +176,7 @@ public abstract class GridBase : IGrid
         gridData = data; // set the grid base data for base logics
         GenGrid();
         SetNeighborsForAllGrid();
+        UIEventBus.Subscribe<CombineMeshEvent>(CombineMeshes);
     }
     public void GenGrid()
     {
@@ -220,6 +224,19 @@ public abstract class GridBase : IGrid
                 gridMap[x, y].neighbors = GetNeighbors(gridMap[x, y]);
             }
         }
+    }
+    protected void CombineMeshes(CombineMeshEvent e)
+    {
+        Mesh combinedMesh = new Mesh();
+        combinedMesh.name = "Combined_Water_Mesh";
+        combinedMesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
+        combinedMesh.CombineMeshes(_submeshes.ToArray(), true, true, false);
+        string path = "Assets/CombinedMeshes/CombinedWater.asset";
+        Directory.CreateDirectory("Assets/CombinedMeshes");
+        AssetDatabase.CreateAsset(combinedMesh, path);
+        AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh();
+        Debug.Log("Mesh saved to: " + path);
     }
     public virtual List<Node> GetNeighbors(Node node)
     {

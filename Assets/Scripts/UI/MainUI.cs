@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -7,7 +8,6 @@ public class MainUI : UIPanelBase<MainUI, MainUIHandler>
     public Button MenuBtn;
     public Button ConfirmBtn;
     public Button CancelBtn;
-
     public override void Init()
     {
         base.Init();

@@ -19,21 +19,29 @@ public class SquareGrid : GridBase
 
         mesh.vertices = SetVertices(4, x, y);
         mesh.triangles = new int[] { 0, 1, 2, 2, 3, 0 };
-        mesh.uv = SetUVs();
+        mesh.uv = SetUVs(x, y, gridData.mapWidth, gridData.mapHeight);
         mesh.RecalculateNormals();
         mesh.RecalculateBounds();
 
         MeshCollider meshCollider = newGrid.AddComponent<MeshCollider>();
         meshCollider.sharedMesh = mesh;
         meshCollider.convex = true;
+
+        CombineInstance ci = new CombineInstance();
+        ci.mesh = mesh;
+        ci.transform = meshCollider.transform.localToWorldMatrix;
+        _submeshes.Add(ci);
     }
-    private Vector2[] SetUVs()
+    private Vector2[] SetUVs(int x, int y, int tileCountX, int tileCountY)
     {
-        Vector2[] uvs = new Vector2[4]; 
-        uvs[0] = new Vector2(0, 0);
-        uvs[1] = new Vector2(0, 1);
-        uvs[2] = new Vector2(1, 1);
-        uvs[3] = new Vector2(1, 0);
+        float tileWidth = 1f / tileCountX;
+        float tileHeight = 1f / tileCountY;
+
+        Vector2[] uvs = new Vector2[4];
+        uvs[0] = new Vector2(x * tileWidth, y * tileHeight);
+        uvs[1] = new Vector2(x * tileWidth, (y + 1) * tileHeight);
+        uvs[2] = new Vector2((x + 1) * tileWidth, (y + 1) * tileHeight);
+        uvs[3] = new Vector2((x + 1) * tileWidth, y * tileHeight);
         return uvs;
     }
     private Vector3[] SetVertices(int verticesCount, int x, int y)

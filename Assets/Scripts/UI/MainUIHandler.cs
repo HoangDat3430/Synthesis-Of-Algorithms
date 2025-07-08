@@ -1,5 +1,7 @@
+using System;
 using UnityEngine;
 
+public class CombineMeshEvent{};
 public class MainUIHandler : UIHandlerBase<MainUI>
 {
     private MainUI m_panel;
