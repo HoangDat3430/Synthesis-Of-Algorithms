@@ -21,7 +21,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Waves
-  m_Shader: {fileID: 4800000, guid: fc0b2e94d548a2941b13c9bf7a08dde7, type: 3}
+  m_Shader: {fileID: 4800000, guid: c6cd3fa458e00fb4daa26847fb57d64a, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -101,7 +101,7 @@ Material:
     m_Floats:
     - _AlphaClip: 0
     - _AlphaToMask: 0
-    - _Amplitude: 1
+    - _Amplitude: 3
     - _Blend: 0
     - _BlendModePreserveSpecular: 1
     - _BumpScale: 1
@@ -114,9 +114,10 @@ Material:
     - _DstBlend: 0
     - _DstBlendAlpha: 0
     - _EnvironmentReflections: 1
+    - _FakeTime: 0
     - _FallOff: 40
     - _Flag: 0
-    - _Frequency: 1
+    - _Frequency: 3
     - _GlossMapScale: 1
     - _Glossiness: 0.65
     - _GlossyReflections: 1
@@ -140,11 +141,11 @@ Material:
     - _ZWrite: 1
     m_Colors:
     - _BaseColor: {r: 0.5849056, g: 0.36406696, b: 0.16278034, a: 1}
-    - _Color: {r: 0, g: 0.49803925, b: 1, a: 1}
+    - _Color: {r: 0, g: 0.6, b: 0.7019608, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _GridSize: {r: 32, g: 2, b: 0, a: 0}
     - _SpecColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
-    - _Speed: {r: 1, g: 0, b: 0, a: 0}
+    - _Speed: {r: 0.5, g: 1, b: 0, a: 0}
     - _TileIndex: {r: 5, g: 123, b: 0, a: 0}
     - _TouchPoint: {r: 16, g: 8, b: 0, a: 0}
   m_BuildTextureStacks: []

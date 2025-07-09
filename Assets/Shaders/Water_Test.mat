@@ -41,9 +41,9 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _Amplitude: 3
-    - _FakeTime: 4.53
-    - _FallOff: 1
+    - _Amplitude: 7.2
+    - _FakeTime: 0
+    - _FallOff: 0.5
     - _FoamFade: 0.1
     - _FoamThreshold: 0.134
     - _Frequency: 1

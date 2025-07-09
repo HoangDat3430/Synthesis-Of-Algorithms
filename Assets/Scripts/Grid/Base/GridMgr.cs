@@ -45,7 +45,7 @@ public class GridMgr : MonoBehaviour
         }
         // Input logics
         bool isSetStartPos = Input.GetMouseButtonUp(0);
-        bool isSetGoalPos = Input.GetMouseButtonUp(1);
+        bool isSetGoalPos = Input.GetKeyDown(KeyCode.G);
         if (isSetStartPos || isSetGoalPos)
         {
             RaycastHit hitInfo;

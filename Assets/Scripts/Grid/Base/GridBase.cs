@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -13,10 +14,11 @@ public abstract class GridBase : IGrid
     public Dictionary<Node, List<Node>> startNodeList = new Dictionary<Node, List<Node>>();
     public Node goal;
     protected List<CombineInstance> _submeshes = new();
+    private Vector4[] rippleDatas = new Vector4[8];
+    private int rippleCount = 0;
     public void SetStartPos(Node newStartNode)
     {
-        SetPropertiesBlock(newStartNode, true, ("_TouchPoint", newStartNode.Position));
-        GridMgr.Instance.StartCoroutine(StartWave(1f));
+        SetTouchPoint(newStartNode.Position);
         return;
         if (goal != newStartNode)
         {
@@ -59,11 +61,44 @@ public abstract class GridBase : IGrid
         float start = 0;
         while (start < delay)
         {
-            start += 0.1f;
-            SetPropertiesBlock(gridMap[0,0], true, ("_FakeTime", new Vector2(start, 0)));
-            yield return new WaitForSeconds(0.1f);
+            start += Time.deltaTime;
+            ShaderUtility.SetPropertyBlock(gridMap[0, 0].meshRenderer, "_RunTime", new Vector2(start, 0));
+            yield return null;
         }
         yield return null;
+    }
+    private void SetTouchPoint(Vector2 pos)
+    {
+        int slot = 0;
+        if (rippleCount < 8)
+        {
+            while (rippleDatas[slot] != Vector4.zero)
+            {
+                slot++;
+            }
+            Vector4 newPoint = new Vector4(pos.x / gridData.mapWidth, pos.y / gridData.mapHeight, 0, Time.time);
+            rippleDatas[slot] = newPoint;
+            rippleCount++;
+            Debug.LogError($"{rippleCount}: {rippleDatas[rippleCount - 1]}");
+            ShaderUtility.SetGlobal("_TouchPoint", rippleDatas);
+            ShaderUtility.SetGlobal("_RippleCount", rippleCount);
+            GridMgr.Instance.StartCoroutine(RemoveDeadWave(slot, 2f));
+        }
+        
+    }
+    IEnumerator RemoveDeadWave(int idx, float duration)
+    {
+        float start = 0;
+        while (start < duration)
+        {
+            start += Time.deltaTime;
+            yield return null;
+        }
+        Debug.LogError($"ripple {idx}: {rippleDatas[idx]} is removed!");
+        rippleDatas[idx] = Vector4.zero;
+        rippleCount--;
+        ShaderUtility.SetGlobal("_TouchPoint", rippleDatas);
+        ShaderUtility.SetGlobal("_RippleCount", rippleCount);
     }
     public void FindAllPaths()
     {
@@ -105,6 +140,12 @@ public abstract class GridBase : IGrid
             SetMaterial(goal, gridData.terrainMat[(int)goal.terrain], true);
             goal = null;
         }
+        for (int i = 0; i < rippleCount; i++)
+        {
+            rippleDatas[i] = Vector4.zero;
+            rippleCount--;
+        }
+        ShaderUtility.SetGlobal("_RippleCount", rippleCount);
     }
     private void ResetStartNode(Node start)
     {
@@ -135,31 +176,8 @@ public abstract class GridBase : IGrid
         if (canSet || bForce)
         {
             node.meshRenderer.material = material;
-            SetPropertiesBlock(node, false, ("_GridSize", new Vector2(gridData.mapWidth, gridData.mapHeight)), ("_TileIndex", node.Position));
         }
         return canSet;
-    }
-    private void SetPropertiesBlock(Node node, bool bGlobal, params (string, Vector2)[] param)
-    {
-        MeshRenderer meshRenderer = node.meshRenderer;
-        MaterialPropertyBlock block = new MaterialPropertyBlock();
-        for (int i = 0; i < param.Length; i++)
-        {
-            string property = param[i].Item1;
-            Vector2 data = param[i].Item2;
-            if (bGlobal)
-            {
-                Debug.LogError(property);
-                Debug.LogError(data);
-                Shader.SetGlobalVector(property, data);
-                return;
-            }
-            else
-            {
-                block.SetVector(property, data);
-            }
-        }
-        meshRenderer.SetPropertyBlock(block);
     }
     private void ShowPaths()
     {
