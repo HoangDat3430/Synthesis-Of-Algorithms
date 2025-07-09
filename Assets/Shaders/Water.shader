@@ -14,6 +14,7 @@ Shader "Unlit/Custom/Water"
         _Frequency ("Frequency", float) = 0
         _Amplitude ("Amplitude", float) = 0
         _FallOff ("Fall off", float) = 0
+        _Duration ("Duration", float) = 1.0
     }
     SubShader
     {
@@ -55,7 +56,7 @@ Shader "Unlit/Custom/Water"
             float4 _TouchPoint[8];
             int _RippleCount;
             float _FallOff;
-            float2 _RunTime;
+            float _Duration = 2;
 
             v2f vert (appdata v)
             {
@@ -67,15 +68,15 @@ Shader "Unlit/Custom/Water"
                     float2 touchUV = _TouchPoint[i].xy;
                     float startTime = _TouchPoint[i].w;
                     float r = distance(uv, touchUV);
-                    float t = max(_Time.y - startTime, 0.0);
+                    float t = max(_Time.y - startTime, 0);
                     float radius = t * _Speed.x;
                     float diff = r - radius;
                     float envelope = exp(-diff * diff * _FallOff * _FallOff);
-                    float wave = sin(diff * _FallOff);
-                    totalWave += wave;
+                    float wave = sin(diff * _FallOff) * envelope;
+                    float amp = _Amplitude * (1-(min(t*0.5/_Duration, 1)));
+                    totalWave += wave * amp;
                 }
-                //_Amplitude -= _Amplitude * t;
-                v.vertex.y += totalWave * _Amplitude;
+                v.vertex.y += totalWave;
 
                 o.uv = v.uv;
                 

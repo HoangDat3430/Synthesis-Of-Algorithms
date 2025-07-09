@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.44657826, g: 0.49641263, b: 0.57481676, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -211,8 +211,8 @@ MonoBehaviour:
       data:
         edgeSize: 1
         gridSpacing: 0
-        mapWidth: 100
-        mapHeight: 100
+        mapWidth: 50
+        mapHeight: 50
         normalMat: {fileID: 2100000, guid: b2b28a9908c593c46ad054ae0ff5c36a, type: 2}
         startMat: {fileID: 2100000, guid: 9f3d9e04f8141174d85e11b28032fc73, type: 2}
         desiredMat: {fileID: 2100000, guid: c6dee1c6e6014a34089cb3bc0e6287a3, type: 2}
@@ -544,7 +544,7 @@ MonoBehaviour:
   targetPivot: {fileID: 191256363}
   distance: 10
   zoomSpeed: 100
-  rotateSpeed: 2
+  rotateSpeed: 50
   panSpeed: 0.1
   minDistance: 2
   maxDistance: 500
