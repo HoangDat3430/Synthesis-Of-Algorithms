@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -14,8 +13,7 @@ public abstract class GridBase : IGrid
     public Dictionary<Node, List<Node>> startNodeList = new Dictionary<Node, List<Node>>();
     public Node goal;
     protected List<CombineInstance> _submeshes = new();
-    private Vector4[] rippleDatas = new Vector4[8];
-    private int rippleCount = 0;
+    private Queue<Vector4> rippleDatas = new(8);
     public void SetStartPos(Node newStartNode)
     {
         SetTouchPoint(newStartNode.Position);
@@ -56,37 +54,17 @@ public abstract class GridBase : IGrid
             ShowPaths();
         }
     }
-    private IEnumerator StartWave(float delay)
-    {
-        float start = 0;
-        while (start < delay)
-        {
-            start += Time.deltaTime;
-            ShaderUtility.SetPropertyBlock(gridMap[0, 0].meshRenderer, "_RunTime", new Vector2(start, 0));
-            yield return null;
-        }
-        yield return null;
-    }
     private void SetTouchPoint(Vector2 pos)
     {
-        int slot = 0;
-        if (rippleCount < 8)
-        {
-            while (rippleDatas[slot] != Vector4.zero)
-            {
-                slot++;
-            }
-            Vector4 newPoint = new Vector4(pos.x / gridData.mapWidth, pos.y / gridData.mapHeight, 0, Time.time);
-            rippleDatas[slot] = newPoint;
-            rippleCount++;
-            Debug.LogError($"{rippleCount}: {rippleDatas[rippleCount - 1]}");
-            ShaderUtility.SetGlobal("_TouchPoint", rippleDatas);
-            ShaderUtility.SetGlobal("_RippleCount", rippleCount);
-            GridMgr.Instance.StartCoroutine(RemoveDeadWave(slot, 2f));
-        }
-        
+        float duration = 1f;
+        Vector4 newPoint = new Vector4(pos.x / gridData.mapWidth, pos.y / gridData.mapHeight, duration, Time.time);
+        rippleDatas.Enqueue(newPoint);
+        Debug.LogError($"Ripple: {newPoint} is added!");
+        ShaderUtility.SetGlobal("_TouchPoint", rippleDatas.ToArray());
+        ShaderUtility.SetGlobal("_RippleCount", rippleDatas.Count);
+        GridMgr.Instance.StartCoroutine(RemoveDeadWave(duration));
     }
-    IEnumerator RemoveDeadWave(int idx, float duration)
+    IEnumerator RemoveDeadWave(float duration)
     {
         float start = 0;
         while (start < duration)
@@ -94,11 +72,14 @@ public abstract class GridBase : IGrid
             start += Time.deltaTime;
             yield return null;
         }
-        Debug.LogError($"ripple {idx}: {rippleDatas[idx]} is removed!");
-        rippleDatas[idx] = Vector4.zero;
-        rippleCount--;
-        ShaderUtility.SetGlobal("_TouchPoint", rippleDatas);
-        ShaderUtility.SetGlobal("_RippleCount", rippleCount);
+        Vector4 ripple = rippleDatas.Dequeue();
+        if (rippleDatas.Count == 0)
+        {
+            rippleDatas.Enqueue(Vector4.zero);
+        }
+        Debug.LogError($"Ripple: {ripple} is removed!");
+        ShaderUtility.SetGlobal("_TouchPoint", rippleDatas.ToArray());
+        ShaderUtility.SetGlobal("_RippleCount", rippleDatas.Count);
     }
     public void FindAllPaths()
     {
@@ -140,12 +121,11 @@ public abstract class GridBase : IGrid
             SetMaterial(goal, gridData.terrainMat[(int)goal.terrain], true);
             goal = null;
         }
-        for (int i = 0; i < rippleCount; i++)
+        for (int i = 0; i < rippleDatas.Count; i++)
         {
-            rippleDatas[i] = Vector4.zero;
-            rippleCount--;
+            rippleDatas.Dequeue();
         }
-        ShaderUtility.SetGlobal("_RippleCount", rippleCount);
+        ShaderUtility.SetGlobal("_RippleCount", rippleDatas.Count);
     }
     private void ResetStartNode(Node start)
     {
