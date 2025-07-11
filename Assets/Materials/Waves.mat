@@ -116,9 +116,9 @@ Material:
     - _Duration: 1
     - _EnvironmentReflections: 1
     - _FakeTime: 0
-    - _FallOff: 40
+    - _FallOff: 60
     - _Flag: 0
-    - _Frequency: 3
+    - _Frequency: 1
     - _GlossMapScale: 1
     - _Glossiness: 0.65
     - _GlossyReflections: 1
@@ -146,7 +146,6 @@ Material:
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _GridSize: {r: 32, g: 2, b: 0, a: 0}
     - _SpecColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
-    - _Speed: {r: 0.5, g: 1, b: 0, a: 0}
+    - _Speed: {r: 0.4, g: 0, b: 0, a: 0}
     - _TileIndex: {r: 5, g: 123, b: 0, a: 0}
-    - _TouchPoint: {r: 16, g: 8, b: 0, a: 0}
   m_BuildTextureStacks: []

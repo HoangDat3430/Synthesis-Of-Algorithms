@@ -61,5 +61,5 @@ Material:
     - _NormalSpeed: {r: 0.05, g: 0.05, b: 0, a: 0}
     - _Speed: {r: 5, g: 0, b: 0, a: 0}
     - _TileIndex: {r: 0, g: 0, b: 0, a: 0}
-    - _TouchPoint: {r: 50, g: 0, b: 50, a: 0}
+    - _TouchPointTest: {r: 50, g: 0, b: 50, a: 0}
   m_BuildTextureStacks: []

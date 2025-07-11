@@ -1,25 +1,20 @@
-Shader "Unlit/Custom/Water_Test"
+Shader "Unlit/Custom/Temp"
 {
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
 
-        //Normal map
+        // Normal map
         _NormTex("Normal Map", 2D) = "bump" {}
         _NormStrength("Normal Strength", Range(0, 2)) = 1.0
         _Color ("Tint", Color) = (0, 0.5, 0.7, 1)
 
-        // Grid's stuff
-        _TileIndex ("Tile Index", Vector) = (0,0,0,0)
-        _GridSize ("GridSize", Vector) = (0,0,0,0)
-
         //Wave effect
         _Speed ("Scroll Speed", Vector) = (1,0,0,0)
-        _TouchPointTest ("Touch Point", Vector) = (0,0,0,0)
         _Frequency ("Frequency", float) = 0
         _Amplitude ("Amplitude", float) = 0
         _FallOff ("Fall off", float) = 0
-        _FakeTime ("Fake Time", Range(0,10)) = 0
+        _Duration ("Duration", float) = 1.0
     }
     SubShader
     {
@@ -47,40 +42,47 @@ Shader "Unlit/Custom/Water_Test"
                 float4 pos : SV_POSITION;
             };
 
-            //TEXTURE2D(_MainTex);
-            sampler2D _MainTex;
-            //SAMPLER(sampler_MainTex);
+            TEXTURE2D(_MainTex);
+            SAMPLER(sampler_MainTex);
             float4 _MainTex_ST;
             TEXTURE2D(_NormTex);
             SAMPLER(sampler_NormTex);
             float _NormStrength;
             float4 _Color;
 
-            float4 _GridSize;
-            float4 _TileIndex;
-
             float4 _Speed;
             float _Frequency;
             float _Amplitude;
-            float4 _TouchPointTest;
+            float4 _Ripple[8];
+            int _RippleCount = 0;
             float _FallOff;
-            float _FakeTime;
-            
-            float2 GetPositionOnTexture(float2 uv)
-            {
-                return uv / _GridSize + _TileIndex / _GridSize;
-            }
 
             v2f vert (appdata v)
             {
                 v2f o;
-                float3 uv = TransformObjectToWorld(v.vertex);
-                float r = distance(uv, _TouchPointTest.xyz);
-                float radius = _FakeTime.x * _Speed.x;
-                float diff = r - radius;
-                float wave = exp(-diff * diff * _FallOff * _FallOff) * sin(diff * _FallOff);
-                v.vertex.y += wave * _Amplitude;
-
+                float2 uv = v.uv;
+                float totalWave = 0;
+                for(int i = 0; i < _RippleCount; i++)
+                {
+                    float2 touchUV = _Ripple[i].xy;
+                    float duration = _Ripple[i].z;
+                    float startTime = _Ripple[i].w;
+                    float r = distance(uv, touchUV);
+                    for(int j = 0; j < _Frequency; j++)
+                    {
+                        float offset = 0.2;
+                        float subStartTime = startTime + (j*offset);
+                        float t = max(_Time.x * 20  - subStartTime, 0);
+                        float radius = t * _Speed.x;
+                        float diff = r - radius;
+                        float envelope = exp(-diff * diff * _FallOff * _FallOff);
+                        float wave = sin(diff * _FallOff) * envelope;
+                        float subAmp = _Amplitude-j*offset;
+                        float amp = subAmp * (1-(min(t/duration, 1)));
+                        totalWave += wave * amp;
+                    }
+                }
+                v.vertex.y += totalWave;
                 o.uv = v.uv;
                 
                 o.pos = TransformObjectToHClip(v.vertex);
@@ -89,11 +91,11 @@ Shader "Unlit/Custom/Water_Test"
             
             half4 frag(v2f i) : SV_Target
             {
-                //return tex2D(_MainTex, i.uv);
+                //return SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, i.uv);
                 // Sample normal map và unpack
-                float2 speed = _Speed/20;
-                float2 uv1 = i.uv + _Time.y * speed.xy;
-                float2 uv2 = i.uv + _Time.y * speed.yx;
+                float2 speed = _Speed/10;
+                float2 uv1 = i.uv + _Time.y * float2( 0.8,  0.5) * 0.05;
+                float2 uv2 = i.uv + _Time.y * float2(-0.4,  0.6) * 0.08;    
 
                 float3 n1 = UnpackNormal(SAMPLE_TEXTURE2D(_NormTex, sampler_NormTex, uv1));
                 float3 n2 = UnpackNormal(SAMPLE_TEXTURE2D(_NormTex, sampler_NormTex, uv2));

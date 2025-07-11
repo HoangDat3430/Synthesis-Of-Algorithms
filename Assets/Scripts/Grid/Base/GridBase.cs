@@ -54,31 +54,35 @@ public abstract class GridBase : IGrid
             ShowPaths();
         }
     }
+    string name = "_TouchPoint";
     private void SetTouchPoint(Vector2 pos)
     {
-        float duration = 1f;
+        float duration = 2f;
         Vector4 newPoint = new Vector4(pos.x / gridData.mapWidth, pos.y / gridData.mapHeight, duration, Time.time);
         rippleDatas.Enqueue(newPoint);
         Debug.LogError($"Ripple: {newPoint} is added!");
-        ShaderUtility.SetGlobal("_TouchPoint", rippleDatas.ToArray());
+        Vector4[] arr = new Vector4[8];
+        rippleDatas.CopyTo(arr, 0);
+        ShaderUtility.SetGlobal(name, arr);
         ShaderUtility.SetGlobal("_RippleCount", rippleDatas.Count);
         GridMgr.Instance.StartCoroutine(RemoveDeadWave(duration));
     }
     IEnumerator RemoveDeadWave(float duration)
     {
         float start = 0;
-        while (start < duration)
+        while (start <= duration)
         {
             start += Time.deltaTime;
             yield return null;
         }
         Vector4 ripple = rippleDatas.Dequeue();
-        if (rippleDatas.Count == 0)
+        if (rippleDatas.Count != 0)
         {
-            rippleDatas.Enqueue(Vector4.zero);
+            Vector4[] arr = new Vector4[8];
+            rippleDatas.CopyTo(arr, 0);
+            ShaderUtility.SetGlobal(name, arr);
         }
         Debug.LogError($"Ripple: {ripple} is removed!");
-        ShaderUtility.SetGlobal("_TouchPoint", rippleDatas.ToArray());
         ShaderUtility.SetGlobal("_RippleCount", rippleDatas.Count);
     }
     public void FindAllPaths()

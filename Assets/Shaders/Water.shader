@@ -50,39 +50,56 @@ Shader "Unlit/Custom/Water"
             float _NormStrength;
             float4 _Color;
 
+            CBUFFER_START(UnityPerMaterial)
+                float4 _TouchPoint[8];
+                int _RippleCount = 0;
+            CBUFFER_END
+            
             float4 _Speed;
             float _Frequency;
             float _Amplitude;
-            float4 _TouchPoint[8];
-            int _RippleCount;
+            
             float _FallOff;
-
+            
+            float SpawnWave(float r, float duration, float startTime, float offset)
+            {
+                float t = _Time.y - startTime;
+                float radius = t * _Speed.x;
+                float diff = r - radius;
+                float envelope = exp(-diff * diff * _FallOff * _FallOff);
+                float wave = sin(diff * _FallOff) * envelope;
+                float subAmp = _Amplitude - offset;
+                float amp = subAmp * (1-(min((t+offset)/duration, 1)));
+                return wave * amp;
+            }
             v2f vert (appdata v)
             {
                 v2f o;
-                float2 uv = v.uv;
                 float totalWave = 0;
+                float2 uv = v.uv;
+                
                 for(int i = 0; i < _RippleCount; i++)
                 {
                     float2 touchUV = _TouchPoint[i].xy;
                     float duration = _TouchPoint[i].z;
                     float startTime = _TouchPoint[i].w;
-                    float r = distance(uv, touchUV);
+                    float r0 = distance(uv, touchUV);
+                    float rX = distance(float2(2.0 - uv.x, uv.y), touchUV);
+                    float rY = distance(float2(uv.x, 2.0 - uv.y), touchUV);
+                    float rZ = distance(float2(0.0 - uv.x, uv.y), touchUV);
+                    float rW = distance(float2(uv.x, 0.0 - uv.y), touchUV);
                     for(int j = 0; j < _Frequency; j++)
                     {
-                        float offset = 0.12f;
-                        float subStartTime = startTime + (j*offset);
-                        float t = max(_Time.y - subStartTime, 0);
-                        float radius = t * _Speed.x;
-                        float diff = r - radius;
-                        float envelope = exp(-diff * diff * _FallOff * _FallOff);
-                        float wave = sin(diff * _FallOff) * envelope;
-                        float amp = (_Amplitude-j*offset) * (1-(min(t*0.5/duration, 1)));
-                        totalWave += wave * amp;
+                        float offset = j * 0.15;
+                        float subStartTime = startTime + offset;
+                        totalWave += SpawnWave(r0, duration, subStartTime, offset);
+                        totalWave += SpawnWave(rX, duration, subStartTime, offset);
+                        totalWave += SpawnWave(rY, duration, subStartTime, offset);
+                        totalWave += SpawnWave(rZ, duration, subStartTime, offset);
+                        totalWave += SpawnWave(rW, duration, subStartTime, offset);
                     }
                 }
                 v.vertex.y += totalWave;
-
                 o.uv = v.uv;
                 
                 o.pos = TransformObjectToHClip(v.vertex);
