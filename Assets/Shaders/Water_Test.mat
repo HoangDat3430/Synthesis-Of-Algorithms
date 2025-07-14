@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Water_Test
-  m_Shader: {fileID: 4800000, guid: fc0b2e94d548a2941b13c9bf7a08dde7, type: 3}
+  m_Shader: {fileID: 4800000, guid: b9aea5d48fe16be48bbafe30afd80f69, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -24,7 +24,7 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: 92041c9083e5e4249919b6c06fcb2210, type: 3}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _NoiseTex:
@@ -41,15 +41,19 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _Amplitude: 7.2
+    - _Amplitude: 1
     - _FakeTime: 0
     - _FallOff: 0.5
     - _FoamFade: 0.1
     - _FoamThreshold: 0.134
     - _Frequency: 1
+    - _Glossiness: 0.5
+    - _Metallic: 0
     - _NoiseStrength: 0.03
     - _NormStrength: 1
     - _NormalStrength: 1.04
+    - _Speed: 4
+    - _WaveLength: 10
     - _Width: 1
     m_Colors:
     - _BaseColor: {r: 0, g: 0.6, b: 0.8, a: 1}
