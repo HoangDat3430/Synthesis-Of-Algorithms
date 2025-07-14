@@ -8,7 +8,6 @@ Shader "Unlit/Custom/Waves"
         _GridSize ("GridSize", Vector) = (0,0,0,0)
         _Frequency ("Frequency", float) = 0
         _Amplitude ("Amplitude", float) = 0
-        [Toggle]_Flag("Is Flag", float) = 1.0
     }
     SubShader
     {
@@ -44,33 +43,19 @@ Shader "Unlit/Custom/Waves"
             float4 _TileIndex;
             float _Frequency;
             float _Amplitude;
-            float _Flag;
-            
-            float2 GetPositionOnTexture(float2 uv)
-            {
-                return uv / _GridSize + _TileIndex / _GridSize;
-            }
 
             v2f vert (appdata v)
             {
                 v2f o;
-                float2 uv = GetPositionOnTexture(v.uv);
                 
                 float ampScale = 1;
-                if(_Flag == 1)
-                {
-                    ampScale = v.vertex.x / _GridSize;
-                }
-                else
-                {
-                    uv += _Speed.xy * _Time.x;
-                }
+                ampScale = v.vertex.x / _GridSize;
                 float2 waveDir = normalize(float2(1.0, 0.0));
-                float wavePhase = dot(uv, waveDir) * _Frequency - _Time.y * _Speed.xy;
+                float wavePhase = dot(v.uv, waveDir) * _Frequency - _Time.y * _Speed.xy;
                 float wave = sin(wavePhase);
                 v.vertex.y += wave * _Amplitude * ampScale;
 
-                o.uv = uv;
+                o.uv = v.uv;
                 
                 o.pos = TransformObjectToHClip(v.vertex);
                 return o;

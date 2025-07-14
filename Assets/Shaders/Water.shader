@@ -86,11 +86,11 @@ Shader "Unlit/Custom/Water"
                     float r0 = distance(uv, touchUV);
                     float rX = distance(float2(2.0 - uv.x, uv.y), touchUV);
                     float rY = distance(float2(uv.x, 2.0 - uv.y), touchUV);
-                    float rZ = distance(float2(0.0 - uv.x, uv.y), touchUV);
-                    float rW = distance(float2(uv.x, 0.0 - uv.y), touchUV);
+                    float rZ = distance(float2(-uv.x, uv.y), touchUV);
+                    float rW = distance(float2(uv.x, -uv.y), touchUV);
                     for(int j = 0; j < _Frequency; j++)
                     {
-                        float offset = j * 0.15;
+                         float offset = j * 0.15;
                         float subStartTime = startTime + offset;
                         totalWave += SpawnWave(r0, duration, subStartTime, offset);
                         totalWave += SpawnWave(rX, duration, subStartTime, offset);
