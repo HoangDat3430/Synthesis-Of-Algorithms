@@ -67,7 +67,6 @@ Shader "Unlit/Custom/Real_Water"
                 float k = 2 * 3.14 / _WaveLength;
                 float f = k * (uv.x - _Speed * _Time.y);
                 
-                // Object-space tangent & normal
                 float3 tangent = normalize(float3(1, k * _Amplitude * cos(f), 0));
                 float3 normal = normalize(cross(tangent, float3(0, 0, 1)));
 
@@ -81,7 +80,7 @@ Shader "Unlit/Custom/Real_Water"
                 Light mainLight = GetMainLight();
                 float3 lightDir = normalize(mainLight.direction);
 
-                float NdotL = saturate(dot(worldNormal, -lightDir)); // nhớ dấu trừ
+                float NdotL = saturate(dot(worldNormal, -lightDir));
                 float3 diffuse = NdotL * mainLight.color.rgb;
 
                 half4 texColor = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, i.uv);
