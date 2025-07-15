@@ -4,8 +4,8 @@ Shader "Unlit/Custom/Real_Water"
     {
         _Color ("Color", Color) = (1,1,1,1)
 		_MainTex ("Albedo (RGB)", 2D) = "white" {}
-		_Glossiness ("Smoothness", Range(0,1)) = 0.5
-		_Metallic ("Metallic", Range(0,1)) = 0.0
+		_Metallic ("Smoothness", Range(0,1)) = 0.5
+		_Smoothness ("Metallic", Range(0,1)) = 0.0
 
         _Amplitude ("Amplitude", float) = 1.0
         _WaveLength ("WaveLength", float) = 1.0
@@ -13,7 +13,8 @@ Shader "Unlit/Custom/Real_Water"
     }
     SubShader
     {
-        Tags { "RenderType"="Opaque" }
+        Name "Forward Lit"
+        Tags { "RenderPipeline"="UniversalRenderPipeline" "RenderType"="Opaque" "Queue"="Geometry" }
         LOD 100
 
         Pass
@@ -21,6 +22,7 @@ Shader "Unlit/Custom/Real_Water"
             HLSLPROGRAM
             #pragma vertex vert
             #pragma fragment frag
+            #pragma target 4.5
 
             #include "URPCommon.hlsl"
 
@@ -28,20 +30,24 @@ Shader "Unlit/Custom/Real_Water"
             {
                 float4 vertex : POSITION;
                 float2 uv : TEXCOORD0;
+                float3 normalOS : NORMAL;
+                float4 texcoord1 : TEXCOORD1;
             };
 
             struct v2f
             {
-                float2 uv : TEXCOORD0;
                 float4 vertex : SV_POSITION;
-                float3 worldPos : TEXCOORD1;
+                float2 uv : TEXCOORD0;
+                float4 normalWS : TEXCOORD1;
+                float3 worldPos : TEXCOORD2;
+                DECLARE_LIGHTMAP_OR_SH(lightmapUV, vertexSH, 3);
             };
 
             TEXTURE2D(_MainTex);
             SAMPLER(sampler_MainTex);
             float4 _MainTex_ST;
 
-            half _Glossiness;
+            half _Smoothness;
             half _Metallic;
             half4 _Color;
 
@@ -52,14 +58,18 @@ Shader "Unlit/Custom/Real_Water"
             v2f vert (appdata v)
             {
                 v2f o;
-                o.uv = v.uv;
 
                 float k = 2 * 3.14 / _WaveLength;
                 float f = k * (v.vertex.x - _Speed.x * _Time.y);
                 v.vertex.y += _Amplitude * sin(f);
 
                 o.vertex = TransformObjectToHClip(v.vertex);
-                o.worldPos = TransformObjectToWorld(v.vertex.xyz);
+                o.uv = v.uv;
+                o.normalWS.xyz = normalize(TransformObjectToWorldNormal(v.normalOS));
+                o.worldPos = TransformObjectToWorld(v.vertex);
+
+                OUTPUT_LIGHTMAP_UV(v.texcoord1, unity_LightmapST, o.lightmapUV);
+                OUTPUT_SH(v.normalOS, o.vertexSH);
                 return o;
             }
             float3 CalculateNormal (float2 uv)
@@ -74,25 +84,25 @@ Shader "Unlit/Custom/Real_Water"
             }
             half4 frag (v2f i) : SV_Target
             {
-                float3 objectNormal = CalculateNormal(i.uv);
-                float3 worldNormal = normalize(mul((float3x3)unity_ObjectToWorld, objectNormal));
+                InputData inputData = (InputData)0;
+                inputData.positionWS = i.worldPos;
+                inputData.normalWS = i.normalWS;
+                inputData.viewDirectionWS = normalize(_WorldSpaceCameraPos - i.worldPos);
+                inputData.bakedGI = SAMPLE_GI(i.lightmapUV, i.vertexSH, i.normalWS);
 
-                Light mainLight = GetMainLight();
-                float3 lightDir = normalize(mainLight.direction);
+                SurfaceData surfaceData;
+                surfaceData.albedo = _Color.rgb;
+                surfaceData.specular = 0;
+                surfaceData.metallic = _Metallic;
+                surfaceData.smoothness = _Smoothness;
+                surfaceData.normalTS = 0;
+                surfaceData.emission = 0;
+                surfaceData.occlusion = 1;
+                surfaceData.alpha = _Color.a;
+                surfaceData.clearCoatMask = 0;
+                surfaceData.clearCoatSmoothness = 0;
 
-                float NdotL = saturate(dot(worldNormal, -lightDir));
-                float3 diffuse = NdotL * mainLight.color.rgb;
-
-                half4 texColor = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, i.uv);
-
-                float3 viewDir = normalize(_WorldSpaceCameraPos - i.worldPos);
-                float3 halfDir = normalize(-lightDir + viewDir);
-                float spec = pow(saturate(dot(worldNormal, halfDir)), 32.0);
-                spec *= NdotL;
-
-                float3 finalColor = texColor.rgb * _Color.rgb * (diffuse + spec);
-
-                return half4(finalColor, 1.0); // alpha phải là 1
+                return UniversalFragmentPBR(inputData, surfaceData);
             }
 
             ENDHLSL

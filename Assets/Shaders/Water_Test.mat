@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Water_Test
-  m_Shader: {fileID: 4800000, guid: b9aea5d48fe16be48bbafe30afd80f69, type: 3}
+  m_Shader: {fileID: 4800000, guid: 3ab516e7fb513d8419bd863de2d032c9, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -52,6 +52,7 @@ Material:
     - _NoiseStrength: 0.03
     - _NormStrength: 1
     - _NormalStrength: 1.04
+    - _Smoothness: 0.5
     - _Speed: 4
     - _WaveLength: 10
     - _Width: 1
