@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Water_Test
-  m_Shader: {fileID: 4800000, guid: 3ab516e7fb513d8419bd863de2d032c9, type: 3}
+  m_Shader: {fileID: 4800000, guid: b9aea5d48fe16be48bbafe30afd80f69, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -24,7 +24,7 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _MainTex:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: a4290bd8a85971c4ebaf019df927606a, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _NoiseTex:
@@ -41,25 +41,28 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _Amplitude: 1
+    - _Amplitude: 10
     - _FakeTime: 0
     - _FallOff: 0.5
     - _FoamFade: 0.1
     - _FoamThreshold: 0.134
     - _Frequency: 1
-    - _Glossiness: 0.5
+    - _Glossiness: 1
     - _Metallic: 0
     - _NoiseStrength: 0.03
     - _NormStrength: 1
     - _NormalStrength: 1.04
-    - _Smoothness: 0.5
-    - _Speed: 4
-    - _WaveLength: 10
+    - _Occlusion: 1
+    - _Smoothness: 0.7
+    - _Speed: 10
+    - _Steepness: 0.5
+    - _WaveLength: 50
     - _Width: 1
     m_Colors:
     - _BaseColor: {r: 0, g: 0.6, b: 0.8, a: 1}
-    - _Color: {r: 0, g: 0.5, b: 0.7, a: 1}
+    - _Color: {r: 0.13679248, g: 0.52507704, b: 1, a: 1}
     - _DeepColor: {r: 0, g: 0.2, b: 0.3, a: 1}
+    - _Direction: {r: 1, g: 1, b: 0, a: 0}
     - _FoamColor: {r: 1, g: 1, b: 1, a: 1}
     - _GridSize: {r: 0, g: 0, b: 0, a: 0}
     - _NoiseSpeed: {r: 0.02, g: -0.03, b: 0, a: 0}
@@ -67,4 +70,7 @@ Material:
     - _Speed: {r: 5, g: 0, b: 0, a: 0}
     - _TileIndex: {r: 0, g: 0, b: 0, a: 0}
     - _TouchPointTest: {r: 50, g: 0, b: 50, a: 0}
+    - _WaveA: {r: 1, g: 0, b: 0.5, a: 10}
+    - _WaveB: {r: 0, g: 1, b: 0.25, a: 20}
+    - _WaveC: {r: 1, g: 1, b: 0.15, a: 10}
   m_BuildTextureStacks: []
