@@ -7,7 +7,13 @@ Shader "Unlit/Custom/Water"
         // Normal map
         _NormTex("Normal Map", 2D) = "bump" {}
         _NormStrength("Normal Strength", Range(0, 2)) = 1.0
-        _Color ("Tint", Color) = (0, 0.5, 0.7, 1)
+        _LightDir ("Light Direction", Vector) = (0,0,0,0)
+        _BaseColor ("Tint", Color) = (0, 0.5, 0.7, 1)
+        
+        // Lighting
+        _Metallic ("Smoothness", Range(0,1)) = 0.5
+		_Smoothness ("Metallic", Range(0,1)) = 0.0
+		_Occlusion ("Occlusion", Range(0,1)) = 1.0
 
         //Wave effect
         _Speed ("Scroll Speed", Vector) = (1,0,0,0)
@@ -32,14 +38,21 @@ Shader "Unlit/Custom/Water"
 
             struct appdata
             {
-                float4 vertex : POSITION;
                 float2 uv : TEXCOORD0;
+                float4 vertex : POSITION;
+                float4 normal : NORMAL;
+                float4 tangent : TANGENT;
+                float4 texcoord1 : TEXCOORD1;
             };
 
             struct v2f
             {
                 float2 uv : TEXCOORD0;
                 float4 pos : SV_POSITION;
+                float4 normalWS : TEXCOORD1;
+                float4 tangentWS : TEXCOORD2;
+                float3 worldPos : TEXCOORD3;
+                DECLARE_LIGHTMAP_OR_SH(lightmapUV, vertexSH, 4);
             };
 
             TEXTURE2D(_MainTex);
@@ -48,7 +61,10 @@ Shader "Unlit/Custom/Water"
             TEXTURE2D(_NormTex);
             SAMPLER(sampler_NormTex);
             float _NormStrength;
-            float4 _Color;
+            float4 _BaseColor;
+            float4 _LightDir;
+
+            float _Metallic, _Smoothness, _Occlusion;
 
             CBUFFER_START(UnityPerMaterial)
                 float4 _TouchPoint[8];
@@ -58,18 +74,27 @@ Shader "Unlit/Custom/Water"
             float4 _Speed;
             float _Frequency;
             float _Amplitude;
-            
             float _FallOff;
             
-            float SpawnWave(float r, float duration, float startTime, float offset)
+            float SpawnWave(float2 uv, float r, float duration, float startTime, float offset, inout float dydxTotal, inout float dydzTotal)
             {
                 float t = _Time.y - startTime;
                 float radius = t * _Speed.x;
                 float diff = r - radius;
-                float envelope = exp(-diff * diff * _FallOff * _FallOff);
-                float wave = sin(diff * _FallOff) * envelope;
+                float f = diff * _FallOff;
+                float envelope = exp(- f * f);
+                float wave = sin(f) * envelope;
+
                 float subAmp = _Amplitude - offset;
-                float amp = subAmp * (1-(min((t+offset)/duration, 1)));
+                float fadeOut = 1 - saturate((t-offset) / duration);
+                float amp = subAmp * fadeOut;
+
+                float dWave = amp * (cos(f) - 2 * sin(f)) * envelope;
+                float dfdx = uv.x/r;
+                float dfdz = uv.y/r;
+                dydxTotal += dWave * dfdx;
+                dydzTotal += dWave * dfdz;
+                
                 return wave * amp;
             }
             v2f vert (appdata v)
@@ -77,6 +102,8 @@ Shader "Unlit/Custom/Water"
                 v2f o;
                 float totalWave = 0;
                 float2 uv = v.uv;
+                float dydxTotal = 0;
+                float dydzTotal = 0;
                 
                 for(int i = 0; i < _RippleCount; i++)
                 {
@@ -90,19 +117,25 @@ Shader "Unlit/Custom/Water"
                     float rW = distance(float2(uv.x, -uv.y), touchUV);
                     for(int j = 0; j < _Frequency; j++)
                     {
-                         float offset = j * 0.15;
+                        float offset = j * 0.15;
                         float subStartTime = startTime + offset;
-                        totalWave += SpawnWave(r0, duration, subStartTime, offset);
-                        totalWave += SpawnWave(rX, duration, subStartTime, offset);
-                        totalWave += SpawnWave(rY, duration, subStartTime, offset);
-                        totalWave += SpawnWave(rZ, duration, subStartTime, offset);
-                        totalWave += SpawnWave(rW, duration, subStartTime, offset);
+                        totalWave += SpawnWave(uv, r0, duration, subStartTime, offset, dydxTotal, dydzTotal);
+                        totalWave += SpawnWave(uv, rX, duration, subStartTime, offset, dydxTotal, dydzTotal);
+                        totalWave += SpawnWave(uv, rY, duration, subStartTime, offset, dydxTotal, dydzTotal);
+                        totalWave += SpawnWave(uv, rZ, duration, subStartTime, offset, dydxTotal, dydzTotal);
+                        totalWave += SpawnWave(uv, rW, duration, subStartTime, offset, dydxTotal, dydzTotal);
                     }
                 }
                 v.vertex.y += totalWave;
                 o.uv = v.uv;
                 
                 o.pos = TransformObjectToHClip(v.vertex);
+                //o.normalWS.xyz = normalize(TransformObjectToWorldNormal(v.normal.xyz));
+                o.normalWS.xyz = normalize(float3(-dydxTotal, 1, -dydzTotal));
+                o.tangentWS.xyz = normalize(TransformObjectToWorldDir(v.tangent));
+                o.worldPos = TransformObjectToWorld(v.vertex);
+                OUTPUT_LIGHTMAP_UV(v.texcoord1, unity_LightmapST, o.lightmapUV);
+                OUTPUT_SH(o.normalWS, o.vertexSH);
                 return o;
             }
             
@@ -123,13 +156,24 @@ Shader "Unlit/Custom/Water"
                 normalTS.xy *= _NormStrength;
                 normalTS = normalize(normalTS);
 
-                // Ánh sáng giả lập chiếu từ trên xuống nhẹ
-                float3 lightDir = normalize(float3(-0.5, 0.5, 1));
-                float ndotl = saturate(dot(normalTS, lightDir));
+                float ndotl = saturate(dot(normalTS, normalize(_LightDir)));
 
-                float3 baseColor = _Color.rgb * ndotl;
+                float3 color = _BaseColor.rgb * ndotl;
 
-                return float4(baseColor, 1);
+                InputData inputData = (InputData)0;
+                inputData.positionWS = i.worldPos;
+                inputData.normalWS = i.normalWS;
+                inputData.viewDirectionWS = normalize(_WorldSpaceCameraPos - i.worldPos);
+                inputData.bakedGI = SAMPLE_GI(i.lightmapUV, i.vertexSH, i.normalWS); 
+
+                SurfaceData surfaceData = (SurfaceData)0;
+                surfaceData.albedo = color.rgb;
+                surfaceData.occlusion = _Occlusion;
+                surfaceData.metallic = _Metallic;
+                surfaceData.smoothness = _Smoothness;
+                surfaceData.alpha = _BaseColor.a;
+
+                return UniversalFragmentPBR(inputData, surfaceData);
             }
             ENDHLSL
         }

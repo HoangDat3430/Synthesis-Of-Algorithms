@@ -63,7 +63,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: c5778342b461ee44a82f6be521cb7465, type: 3}
+        m_Texture: {fileID: 2800000, guid: a4290bd8a85971c4ebaf019df927606a, type: 3}
         m_Scale: {x: 0.1, y: 0.1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
@@ -117,7 +117,7 @@ Material:
     - _Duration: 1
     - _EnvironmentReflections: 1
     - _FakeTime: 0
-    - _FallOff: 60
+    - _FallOff: 20
     - _Flag: 1
     - _Frequency: 1
     - _GlossMapScale: 1
@@ -126,11 +126,12 @@ Material:
     - _Metallic: 0
     - _Mode: 0
     - _NormStrength: 1
+    - _Occlusion: 0.5
     - _OcclusionStrength: 1
     - _Parallax: 0.02
     - _QueueOffset: 0
     - _ReceiveShadows: 1
-    - _Smoothness: 0.65
+    - _Smoothness: 0.8
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
@@ -142,11 +143,12 @@ Material:
     - _WorkflowMode: 1
     - _ZWrite: 1
     m_Colors:
-    - _BaseColor: {r: 0.5849056, g: 0.36406696, b: 0.16278034, a: 1}
+    - _BaseColor: {r: 0.16470589, g: 0.48828754, b: 0.58431375, a: 1}
     - _Color: {r: 0, g: 0.6, b: 0.7019608, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _GridSize: {r: 32, g: 2, b: 0, a: 0}
+    - _LightDir: {r: 0.5, g: 0.5, b: 1, a: 0}
     - _SpecColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
-    - _Speed: {r: 0.5, g: 0, b: 0, a: 0}
+    - _Speed: {r: 0.7, g: 0, b: 0, a: 0}
     - _TileIndex: {r: 5, g: 123, b: 0, a: 0}
   m_BuildTextureStacks: []

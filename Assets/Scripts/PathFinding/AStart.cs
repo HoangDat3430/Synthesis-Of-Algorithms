@@ -26,7 +26,7 @@ public class AStart : IPathFindingAlgorithm
             //Debug.LogError("Neighbours: " + currentNode.neighbors.Count, currentNode.NodeGO);
             foreach (var neighbor in currentNode.neighbors)
             {
-                if (visitedNodes.Contains(neighbor))
+                if (visitedNodes.Contains(neighbor) || neighbor.isObstacle)
                 {
                     continue;
                 }

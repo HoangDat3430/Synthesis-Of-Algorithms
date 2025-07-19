@@ -105,7 +105,7 @@ Shader "Unlit/Custom/Real_Water"
                 float3 p = gridPoint;
                 p += GerstnerWave(_WaveA, gridPoint, tangent, binormal);
                 p += GerstnerWave(_WaveB, gridPoint, tangent, binormal);
-                //p += GerstnerWave(_WaveC, gridPoint, tangent, binormal);
+                p += GerstnerWave(_WaveC, gridPoint, tangent, binormal);
                 float3 normal = normalize(cross(binormal, tangent));
                 v.vertex.xyz = p;
                 
