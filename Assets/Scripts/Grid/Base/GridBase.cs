@@ -192,7 +192,7 @@ public abstract class GridBase : IGrid
             }
         }
     }
-    public Node GenSingleNode(int x, int y)
+    public virtual Node GenSingleNode(int x, int y)
     {
         GameObject newGrid = new GameObject(string.Format("X:{0}, Y:{1}", x, y));
         newGrid.transform.parent = GridMgr.Instance.transform;

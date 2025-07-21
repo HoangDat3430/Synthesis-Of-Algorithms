@@ -34,6 +34,7 @@ public class CameraController : MonoBehaviour
     {
         HandleInput();
         UpdateCameraPosition();
+        ShaderUtility.SetGlobal("_camPos", transform.position);
     }
 
     void HandleInput()

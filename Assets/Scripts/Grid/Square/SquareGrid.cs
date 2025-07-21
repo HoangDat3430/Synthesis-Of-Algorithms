@@ -11,6 +11,16 @@ public class SquareGrid : GridBase
         _squareGridData = data as SquareGridData;
         base.Init(data);
     }
+    public override Node GenSingleNode(int x, int y)
+    {
+        GameObject newGrid = new GameObject(string.Format("X:{0}, Y:{1}", x, y));
+        newGrid.transform.parent = GridMgr.Instance.transform;
+        Vector3 pos = new Vector3(x, 0, y);
+        newGrid.transform.localPosition = pos;
+        Debug.LogError(pos, newGrid);
+        DrawGrid(newGrid, x, y);
+        return new Node(newGrid, new Vector2Int(x, y));
+    }
     public override void DrawGrid(GameObject newGrid, int x, int y)
     {
         Mesh mesh = new Mesh();
@@ -34,14 +44,19 @@ public class SquareGrid : GridBase
     }
     private Vector2[] SetUVs(int x, int y, int tileCountX, int tileCountY)
     {
-        float tileWidth = 1f / tileCountX;
-        float tileHeight = 1f / tileCountY;
+        float tileWidth = 1f/tileCountX;
+        float tileHeight = 1f/tileCountY;
 
         Vector2[] uvs = new Vector2[4];
         uvs[0] = new Vector2(x * tileWidth, y * tileHeight);
         uvs[1] = new Vector2(x * tileWidth, (y + 1) * tileHeight);
         uvs[2] = new Vector2((x + 1) * tileWidth, (y + 1) * tileHeight);
         uvs[3] = new Vector2((x + 1) * tileWidth, y * tileHeight);
+
+        // uvs[0] = new Vector2(0, 0);
+        // uvs[1] = new Vector2(0, 1);
+        // uvs[2] = new Vector2(1, 1);
+        // uvs[3] = new Vector2(1, 0);
         return uvs;
     }
     private Vector3[] SetVertices(int verticesCount, int x, int y)
@@ -63,6 +78,10 @@ public class SquareGrid : GridBase
         vertices[2] = new Vector3(x + gridData.edgeSize, 0, y + gridData.edgeSize);
         vertices[3] = new Vector3(x + gridData.edgeSize, 0, y);
 
+        vertices[0] = new Vector3(0, 0, 0);
+        vertices[1] = new Vector3(0, 0, 1);
+        vertices[2] = new Vector3(1, 0, 1);
+        vertices[3] = new Vector3(1, 0, 0);
         return vertices;
     }
     private Vector2Int[] GetNeighborDir(Node node)
