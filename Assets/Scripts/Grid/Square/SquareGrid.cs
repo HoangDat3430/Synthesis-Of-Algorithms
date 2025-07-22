@@ -17,7 +17,6 @@ public class SquareGrid : GridBase
         newGrid.transform.parent = GridMgr.Instance.transform;
         Vector3 pos = new Vector3(x, 0, y);
         newGrid.transform.localPosition = pos;
-        Debug.LogError(pos, newGrid);
         DrawGrid(newGrid, x, y);
         return new Node(newGrid, new Vector2Int(x, y));
     }

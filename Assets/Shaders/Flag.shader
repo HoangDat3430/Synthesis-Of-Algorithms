@@ -1,4 +1,4 @@
-Shader "Unlit/Custom/Flag"
+Shader "Custom/Flag"
 {
     Properties
     {

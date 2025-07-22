@@ -1,4 +1,4 @@
-Shader "Unlit/Custom/WaterSurface"
+Shader "Custom/WaterSurface"
 {
     Properties
     {
@@ -16,7 +16,7 @@ Shader "Unlit/Custom/WaterSurface"
 		_Occlusion ("Occlusion", Range(0,1)) = 1.0
 
         //Wave effect
-        _Speed ("Scroll Speed", Vector) = (1,0,0,0)
+        _Speed ("Speed", Vector) = (1,0,0,0)
         _Frequency ("Frequency", float) = 0
         _Amplitude ("Amplitude", float) = 0
         _FallOff ("Fall off", float) = 0
@@ -75,6 +75,7 @@ Shader "Unlit/Custom/WaterSurface"
             float _Frequency;
             float _Amplitude;
             float _FallOff;
+            float _Duration;
             
             float SpawnWave(float2 uv, float r, float duration, float startTime, float offset, inout float dydxTotal, inout float dydzTotal)
             {
@@ -86,7 +87,7 @@ Shader "Unlit/Custom/WaterSurface"
                 float wave = sin(f) * envelope;
 
                 float subAmp = _Amplitude - offset;
-                float fadeOut = 1 - saturate((t-offset) / duration);
+                float fadeOut = 1 - saturate((t+offset) / duration);
                 float amp = subAmp * fadeOut;
 
                 float dWave = amp * (cos(f) - 2 * sin(f)) * envelope;
@@ -109,6 +110,7 @@ Shader "Unlit/Custom/WaterSurface"
                 {
                     float2 touchUV = _TouchPoint[i].xy;
                     float duration = _TouchPoint[i].z;
+                    duration = _Duration;
                     float startTime = _TouchPoint[i].w;
                     float r0 = distance(uv, touchUV);
                     float rX = distance(float2(2.0 - uv.x, uv.y), touchUV);

@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -175,13 +176,14 @@ namespace StarterAssets
             }
             if (Input.GetKeyDown(KeyCode.LeftShift) && canDash)
             {
-                StartCoroutine(Dash());
+                //StartCoroutine(Dash());
             }
         }
 
         private void LateUpdate()
         {
             CameraRotation();
+            Shader.SetGlobalVector("_CamPos", Camera.main.transform.position);
         }
 
         private void AssignAnimationIDs()
@@ -400,7 +402,7 @@ namespace StarterAssets
                 new Vector3(transform.position.x, transform.position.y - GroundedOffset, transform.position.z),
                 GroundedRadius);
         }
-
+        Queue<Vector4> arr = new(8);
         private void OnFootstep(AnimationEvent animationEvent)
         {
             if (animationEvent.animatorClipInfo.weight > 0.5f)
@@ -409,10 +411,27 @@ namespace StarterAssets
                 {
                     var index = Random.Range(0, FootstepAudioClips.Length);
                     AudioSource.PlayClipAtPoint(FootstepAudioClips[index], transform.TransformPoint(_controller.center), FootstepAudioVolume);
+                    if (arr.Count >= 8)
+                    {
+                        arr.Dequeue();
+                    }
+                    Vector2 uv = GetUVPos();
+                    Vector4 touchData = new Vector4(uv.x, uv.y, 0.5f, Time.time);
+                    arr.Enqueue(touchData);
+                    Shader.SetGlobalVectorArray("_TouchPoint", arr.ToArray());
+                    Shader.SetGlobalInt("_RippleCount", arr.Count);
                 }
             }
         }
+        private Vector2 GetUVPos()
+        {
+            Vector3 origin = transform.position + Vector3.up * 1.0f + transform.forward * 0.5f; // Tăng một chút chiều cao để ray không bắt vào chân nhân vật
+            Vector3 direction = Vector3.down;
 
+            Physics.Raycast(origin, direction, out RaycastHit hit, 10f);
+            return hit.textureCoord;
+;
+        }
         private void OnLand(AnimationEvent animationEvent)
         {
             if (animationEvent.animatorClipInfo.weight > 0.5f)

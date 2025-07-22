@@ -6,6 +6,7 @@ Shader "Custom/Leaf"
         _BaseColor("Base Color", Color) = (1,1,1,1)
 
         _Angle("Angle", float) = 0
+        _Offset("Offset", Vector) = (0,0,0,0)
     }
 
     SubShader
@@ -27,13 +28,13 @@ Shader "Custom/Leaf"
 
             struct appdata
             {
-                float4 positionOS : POSITION;
+                float4 vertex : POSITION;
                 float2 uv         : TEXCOORD0;
             };
 
             struct v2f
             {
-                float4 positionWS : SV_POSITION;
+                float4 pos : SV_POSITION;
                 float2 uv          : TEXCOORD0;
             };
 
@@ -42,28 +43,28 @@ Shader "Custom/Leaf"
             float4 _BaseColor;
             float4 _BaseMap_ST;
 
-            float4 _camPos;
+            float3 _CamPos;
             float _Angle;
+            float4 _Offset;
 
             v2f vert(appdata v)
             {
                 v2f o;
+                _CamPos = _WorldSpaceCameraPos;
+                float3 toCam = _CamPos - TransformObjectToWorld(v.vertex);
+                toCam.y = 0;
+                toCam = normalize(toCam);
+                float angle = atan2(toCam.x, toCam.z);
+                float s = sin(angle);
+                float c = cos(angle);
 
-                // Convert angle to radians
-                float rad = radians(_Angle);
-                float s = sin(rad);
-                float c = cos(rad);
-
-                // Rotate around Z axis
-                float3 pos = v.positionOS.xyz;
+                float3 pos = v.vertex.xyz;
                 float3 rotated;
                 rotated.x = pos.x * c - pos.y * s;
                 rotated.y = pos.x * s + pos.y * c;
                 rotated.z = pos.z;
 
-                float4 rotatedPos = float4(rotated, 1.0);
-
-                o.positionWS = TransformObjectToHClip(float4(rotated, 1));
+                o.pos = TransformObjectToHClip(float4(rotated, 1));
                 o.uv = TRANSFORM_TEX(v.uv, _BaseMap);
                 return o;
             }

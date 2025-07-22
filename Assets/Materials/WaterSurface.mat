@@ -102,7 +102,7 @@ Material:
     m_Floats:
     - _AlphaClip: 0
     - _AlphaToMask: 0
-    - _Amplitude: 5
+    - _Amplitude: 0.05
     - _Blend: 0
     - _BlendModePreserveSpecular: 1
     - _BumpScale: 1
@@ -114,10 +114,10 @@ Material:
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
     - _DstBlendAlpha: 0
-    - _Duration: 1
+    - _Duration: 2
     - _EnvironmentReflections: 1
     - _FakeTime: 0
-    - _FallOff: 20
+    - _FallOff: 300
     - _Flag: 1
     - _Frequency: 1
     - _GlossMapScale: 1
@@ -125,7 +125,7 @@ Material:
     - _GlossyReflections: 1
     - _Metallic: 0
     - _Mode: 0
-    - _NormStrength: 1
+    - _NormStrength: 0.5
     - _Occlusion: 0.5
     - _OcclusionStrength: 1
     - _Parallax: 0.02
@@ -143,12 +143,15 @@ Material:
     - _WorkflowMode: 1
     - _ZWrite: 1
     m_Colors:
-    - _BaseColor: {r: 0.16470589, g: 0.48828754, b: 0.58431375, a: 1}
+    - _BaseColor: {r: 0.21867211, g: 0.61984664, b: 0.735849, a: 1}
     - _Color: {r: 0, g: 0.6, b: 0.7019608, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _GridSize: {r: 32, g: 2, b: 0, a: 0}
     - _LightDir: {r: 0.5, g: 0.5, b: 1, a: 0}
     - _SpecColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
-    - _Speed: {r: 0.7, g: 0, b: 0, a: 0}
+    - _Speed: {r: 0.1, g: 0, b: 0, a: 0}
     - _TileIndex: {r: 5, g: 123, b: 0, a: 0}
+    - _WaveA: {r: 1, g: 0, b: 0.5, a: 50}
+    - _WaveB: {r: 0, g: 1, b: 0.25, a: 20}
+    - _WaveC: {r: 1, g: 1, b: 0.15, a: 10}
   m_BuildTextureStacks: []
