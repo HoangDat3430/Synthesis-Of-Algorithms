@@ -545,7 +545,7 @@ MonoBehaviour:
   distance: 10
   zoomSpeed: 70
   rotateSpeed: 20
-  panSpeed: 0.01
+  panSpeed: 0.1
   minDistance: 2
   maxDistance: 500
 --- !u!1 &1294278240

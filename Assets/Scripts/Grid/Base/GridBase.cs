@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -57,6 +58,11 @@ public abstract class GridBase : IGrid
     string name = "_TouchPoint";
     private void SetTouchPoint(Vector2 pos)
     {
+        if (rippleDatas.Count >= 8)
+        {
+            Debug.LogError($"Ripple: {rippleDatas.Peek()} is removed!");
+            rippleDatas.Dequeue();
+        }
         float duration = 2f;
         Vector4 newPoint = new Vector4(pos.x / gridData.mapWidth, pos.y / gridData.mapHeight, duration, Time.time);
         rippleDatas.Enqueue(newPoint);
@@ -64,25 +70,6 @@ public abstract class GridBase : IGrid
         Vector4[] arr = new Vector4[8];
         rippleDatas.CopyTo(arr, 0);
         ShaderUtility.SetGlobal(name, arr);
-        ShaderUtility.SetGlobal("_RippleCount", rippleDatas.Count);
-        GridMgr.Instance.StartCoroutine(RemoveDeadWave(duration));
-    }
-    IEnumerator RemoveDeadWave(float duration)
-    {
-        float start = 0;
-        while (start <= duration)
-        {
-            start += Time.deltaTime;
-            yield return null;
-        }
-        Vector4 ripple = rippleDatas.Dequeue();
-        if (rippleDatas.Count != 0)
-        {
-            Vector4[] arr = new Vector4[8];
-            rippleDatas.CopyTo(arr, 0);
-            ShaderUtility.SetGlobal(name, arr);
-        }
-        Debug.LogError($"Ripple: {ripple} is removed!");
         ShaderUtility.SetGlobal("_RippleCount", rippleDatas.Count);
     }
     public void FindAllPaths()

@@ -402,7 +402,7 @@ namespace StarterAssets
                 new Vector3(transform.position.x, transform.position.y - GroundedOffset, transform.position.z),
                 GroundedRadius);
         }
-        Queue<Vector4> arr = new(8);
+        Queue<Vector4> _ripples = new(8);
         private void OnFootstep(AnimationEvent animationEvent)
         {
             if (animationEvent.animatorClipInfo.weight > 0.5f)
@@ -411,32 +411,41 @@ namespace StarterAssets
                 {
                     var index = Random.Range(0, FootstepAudioClips.Length);
                     AudioSource.PlayClipAtPoint(FootstepAudioClips[index], transform.TransformPoint(_controller.center), FootstepAudioVolume);
-                    if (arr.Count >= 8)
-                    {
-                        arr.Dequeue();
-                    }
-                    Vector2 uv = GetUVPos();
-                    Vector4 touchData = new Vector4(uv.x, uv.y, 0.5f, Time.time);
-                    arr.Enqueue(touchData);
-                    Shader.SetGlobalVectorArray("_TouchPoint", arr.ToArray());
-                    Shader.SetGlobalInt("_RippleCount", arr.Count);
+                    AddRippleEffect(transform.forward * 0.5f);
                 }
             }
         }
-        private Vector2 GetUVPos()
+        private void AddRippleEffect(Vector3 offset)
         {
-            Vector3 origin = transform.position + Vector3.up * 1.0f + transform.forward * 0.5f; // Tăng một chút chiều cao để ray không bắt vào chân nhân vật
+            if (_ripples.Count >= 8)
+            {
+                _ripples.Dequeue();
+            }
+            Vector2 uv = GetUVPos(offset);
+            Vector4 touchData = new Vector4(uv.x, uv.y, 0.5f, Time.time);
+            _ripples.Enqueue(touchData);
+            Vector4[] arr = new Vector4[8];
+            _ripples.CopyTo(arr, 0);
+            Shader.SetGlobalVectorArray("_TouchPoint", arr);
+            Shader.SetGlobalInt("_RippleCount", _ripples.Count);
+        }
+        private Vector2 GetUVPos(Vector3 offset)
+        {
+            Vector3 origin = transform.position + Vector3.up * 1.0f + offset; // Tăng một chút chiều cao để ray không bắt vào chân nhân vật
             Vector3 direction = Vector3.down;
 
             Physics.Raycast(origin, direction, out RaycastHit hit, 10f);
             return hit.textureCoord;
-;
         }
         private void OnLand(AnimationEvent animationEvent)
         {
             if (animationEvent.animatorClipInfo.weight > 0.5f)
             {
                 AudioSource.PlayClipAtPoint(LandingAudioClip, transform.TransformPoint(_controller.center), FootstepAudioVolume);
+                Vector3 legL = (transform.forward-transform.right) * 0.2f;
+                Vector3 legR = transform.right * 0.2f;
+                AddRippleEffect(legL);
+                AddRippleEffect(legR);
             }
         }
     }

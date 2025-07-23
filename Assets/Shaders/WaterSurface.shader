@@ -90,11 +90,11 @@ Shader "Custom/WaterSurface"
                 float fadeOut = 1 - saturate((t+offset) / duration);
                 float amp = subAmp * fadeOut;
 
-                float dWave = amp * (cos(f) - 2 * sin(f)) * envelope;
-                float dfdx = uv.x/r;
-                float dfdz = uv.y/r;
-                dydxTotal += dWave * dfdx;
-                dydzTotal += dWave * dfdz;
+                float dWave = amp * (cos(f) - 2 * sin(f)) * envelope; // derivative of wave
+
+                float2 dir = normalize(uv + float2(1e-6, 1e-6)); //derivative dydx & dydz (uv/r => uv/length(uv) => normalize(uv)). Epsilon to avoid 0/0 = NaN
+                dydxTotal += dWave * dir.x;
+                dydzTotal += dWave * dir.y;
                 
                 return wave * amp;
             }
@@ -132,7 +132,7 @@ Shader "Custom/WaterSurface"
                 o.uv = v.uv;
                 
                 o.pos = TransformObjectToHClip(v.vertex);
-                //o.normalWS.xyz = normalize(TransformObjectToWorldNormal(v.normal.xyz));
+                o.normalWS.xyz = normalize(TransformObjectToWorldNormal(v.normal.xyz));
                 o.normalWS.xyz = normalize(float3(-dydxTotal, 1, -dydzTotal));
                 o.tangentWS.xyz = normalize(TransformObjectToWorldDir(v.tangent));
                 o.worldPos = TransformObjectToWorld(v.vertex);
