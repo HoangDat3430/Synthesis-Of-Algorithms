@@ -15,6 +15,7 @@ Shader "Custom/Waves"
         _WaveA ("Wave A (dir, steepness, wavelength)", Vector) = (1,0,0.5,10)
 		_WaveB ("Wave B", Vector) = (0,1,0.25,20)
 		_WaveC ("Wave C", Vector) = (1,1,0.15,10)
+        _Speed ("Speed", float) = 1
     }
     SubShader
     {
@@ -66,6 +67,7 @@ Shader "Custom/Waves"
             float4 _WaveA;
             float4 _WaveB;
             float4 _WaveC;
+            float _Speed;
 
             float3 GerstnerWave (
                 float4 wave, float3 p, inout float3 tangent, inout float3 binormal
@@ -73,7 +75,7 @@ Shader "Custom/Waves"
                 float steepness = wave.z;
                 float wavelength = wave.w;
                 float k = 2 * 3.14 / wavelength;
-                float c = sqrt(9.8 / k);
+                float c = sqrt(9.8 / k) * _Speed;
                 float2 d = normalize(wave.xy);
                 float f = k * (dot(d, p.xz) - c * _Time.y);
                 float a = steepness / k;
@@ -124,21 +126,14 @@ Shader "Custom/Waves"
 
             half4 frag (v2f i) : SV_Target
             {
-                InputData inputData = (InputData)0;
-                inputData.positionWS = i.worldPos;
-                inputData.normalWS = i.normalWS;
-                inputData.viewDirectionWS = normalize(_WorldSpaceCameraPos - i.worldPos);
-                inputData.bakedGI = SAMPLE_GI(i.lightmapUV, i.vertexSH, i.normalWS);
+                half3 viewDirWS = normalize(_WorldSpaceCameraPos - i.worldPos);
+                half3 bakedGI = SAMPLE_GI(i.lightmapUV, i.vertexSH, i.normalWS);
+                InputData inputData = InitializeInputData(i.worldPos, i.normalWS, viewDirWS, bakedGI);
                 inputData.shadowCoord = TransformWorldToShadowCoord(i.worldPos);
                 float3x3 tangentToWorld = CreateTangentToWorld(i.tangentWS, i.bitangentWS, i.normalWS);
                 inputData.tangentToWorld = tangentToWorld;
-
-                SurfaceData surfaceData = (SurfaceData)0;
-                surfaceData.albedo = _Color.rgb;
-                surfaceData.metallic = _Metallic;
-                surfaceData.smoothness = _Smoothness;
-                surfaceData.occlusion = _Occlusion;
-                surfaceData.alpha = _Color.a;
+                
+                SurfaceData surfaceData = InitializeSurfaceData(_Color.rgb, _Color.a, _Metallic, _Smoothness, _Occlusion);
 
                 return UniversalFragmentPBR(inputData, surfaceData);
             }

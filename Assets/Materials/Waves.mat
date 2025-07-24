@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Waves
-  m_Shader: {fileID: 4800000, guid: b9aea5d48fe16be48bbafe30afd80f69, type: 3}
+  m_Shader: {fileID: 4800000, guid: b918d8052586a804ba6b64103ebaeb50, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
@@ -48,12 +48,12 @@ Material:
     - _FoamThreshold: 0.134
     - _Frequency: 1
     - _Glossiness: 1
-    - _Metallic: 0.514
+    - _Metallic: 0.5
     - _NoiseStrength: 0.03
     - _NormStrength: 1
     - _NormalStrength: 1.04
     - _Occlusion: 1
-    - _Smoothness: 0.5
+    - _Smoothness: 1
     - _Speed: 10
     - _Steepness: 0.5
     - _WaveLength: 50
@@ -67,10 +67,11 @@ Material:
     - _GridSize: {r: 0, g: 0, b: 0, a: 0}
     - _NoiseSpeed: {r: 0.02, g: -0.03, b: 0, a: 0}
     - _NormalSpeed: {r: 0.05, g: 0.05, b: 0, a: 0}
+    - _Specular: {r: 0, g: 0, b: 0, a: 0}
     - _Speed: {r: 5, g: 0, b: 0, a: 0}
     - _TileIndex: {r: 0, g: 0, b: 0, a: 0}
     - _TouchPointTest: {r: 50, g: 0, b: 50, a: 0}
-    - _WaveA: {r: 1, g: 1, b: 0.15, a: 50}
-    - _WaveB: {r: 0.6, g: 0.92, b: 0.25, a: 30}
-    - _WaveC: {r: 0.2, g: 0.77, b: 0.25, a: 20}
+    - _WaveA: {r: 1, g: 1, b: 0.15, a: 300}
+    - _WaveB: {r: 0.6, g: 0.92, b: 0.25, a: 180}
+    - _WaveC: {r: 0.2, g: 0.77, b: 0.25, a: 120}
   m_BuildTextureStacks: []

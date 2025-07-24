@@ -24,7 +24,8 @@ Shader "Custom/WaterSurface"
     }
     SubShader
     {
-        Tags { "RenderType"="Opaque" }
+        Name "Forward Lit"
+        Tags { "RenderPipeline"="UniversalRenderPipeline" "RenderType"="Opaque" "Queue"="Geometry" }
         LOD 100
 
         Pass
@@ -33,8 +34,7 @@ Shader "Custom/WaterSurface"
             #pragma vertex vert
             #pragma fragment frag
 
-            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
-            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
+            #include "URPCommon.hlsl"
 
             struct appdata
             {
@@ -162,18 +162,10 @@ Shader "Custom/WaterSurface"
 
                 float3 color = _BaseColor.rgb * ndotl;
 
-                InputData inputData = (InputData)0;
-                inputData.positionWS = i.worldPos;
-                inputData.normalWS = i.normalWS;
-                inputData.viewDirectionWS = normalize(_WorldSpaceCameraPos - i.worldPos);
-                inputData.bakedGI = SAMPLE_GI(i.lightmapUV, i.vertexSH, i.normalWS); 
-
-                SurfaceData surfaceData = (SurfaceData)0;
-                surfaceData.albedo = color.rgb;
-                surfaceData.occlusion = _Occlusion;
-                surfaceData.metallic = _Metallic;
-                surfaceData.smoothness = _Smoothness;
-                surfaceData.alpha = _BaseColor.a;
+                half3 viewDirWS = normalize(_WorldSpaceCameraPos - i.worldPos);
+                half3 bakedGI = SAMPLE_GI(i.lightmapUV, i.vertexSH, i.normalWS);
+                InputData inputData = InitializeInputData(i.worldPos, i.normalWS, viewDirWS, bakedGI);
+                SurfaceData surfaceData = InitializeSurfaceData(color.rgb, _BaseColor.a, _Metallic, _Smoothness, _Occlusion);
 
                 return UniversalFragmentPBR(inputData, surfaceData);
             }

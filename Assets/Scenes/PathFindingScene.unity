@@ -794,11 +794,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1703579024647090192, guid: 71a7f3bdd45e9bb488e036295864a191, type: 3}
       propertyPath: m_Name
-      value: Plane
+      value: Erosion
       objectReference: {fileID: 0}
     - target: {fileID: 1703579024647090192, guid: 71a7f3bdd45e9bb488e036295864a191, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4002710462465871183, guid: 71a7f3bdd45e9bb488e036295864a191, type: 3}
       propertyPath: m_RootOrder
