@@ -35,6 +35,7 @@ namespace StarterAssets
 
         public AudioClip LandingAudioClip;
         public AudioClip[] FootstepAudioClips;
+        public SkinnedMeshRenderer SkinnedMesh;
         [Range(0, 1)] public float FootstepAudioVolume = 0.5f;
 
         [Space(10)]
@@ -95,8 +96,8 @@ namespace StarterAssets
         Vector3 _moveDir = Vector3.zero;   
         bool isDashing = false;
         bool canDash = true;
-        float dashSpd = 20f;
-        float dashDuration = .3f;
+        float dashSpd = 5f;
+        float dashDuration = 4f;
         float dashCooldown = .5f;
 
         // timeout deltatime
@@ -167,16 +168,15 @@ namespace StarterAssets
         private void Update()
         {
             _hasAnimator = TryGetComponent(out _animator);
-
-            JumpAndGravity();
-            GroundedCheck();
             if (!isDashing)
             {
+                JumpAndGravity();
+                GroundedCheck();
                 Move();
             }
             if (Input.GetKeyDown(KeyCode.LeftShift) && canDash)
             {
-                //StartCoroutine(Dash());
+                StartCoroutine(Teleport());
             }
         }
 
@@ -306,6 +306,47 @@ namespace StarterAssets
             while (elapsed <= dashDuration)
             {
                 _controller.Move(_moveDir.normalized * dashSpd * Time.deltaTime);
+                elapsed += Time.deltaTime;
+                yield return null;
+            }
+            isDashing = false;
+            yield return new WaitForSeconds(dashCooldown);
+            canDash = true;
+        }
+        IEnumerator Teleport()
+        {
+            isDashing = true;
+            canDash = false;
+            float elapsed = 0f;
+            while (elapsed <= dashDuration/2)
+            {
+                _animationBlend = Mathf.Lerp(_animationBlend, 0, Time.deltaTime * 2);
+                _animator.SetFloat(_animIDSpeed, _animationBlend);
+                foreach (var mat in SkinnedMesh.materials)
+                {
+                    float var = 1 - elapsed * 2 / dashDuration;
+                    mat.SetFloat("_Reveal", var < 0.02 ? 0 : var);
+                }
+                elapsed += Time.deltaTime;
+                yield return null;
+            }
+            Vector3 targetPos = transform.position + _moveDir.normalized * dashSpd * dashDuration;
+            float transition = 0f, step = 0.05f;
+            while (transition < dashDuration)
+            {
+                transform.position = Vector3.Lerp(transform.position, targetPos, step);
+                transition += step;
+                yield return null;
+            }
+            yield return new WaitForSeconds(step * 5);
+            //_controller.Move(_moveDir.normalized * dashSpd * elapsed);
+            while (elapsed <= dashDuration)
+            {
+                foreach (var mat in SkinnedMesh.materials)
+                {
+                    float var = elapsed * 2 / dashDuration - 1;
+                    mat.SetFloat("_Reveal", var > 0.98 ? 1 : var);
+                }
                 elapsed += Time.deltaTime;
                 yield return null;
             }

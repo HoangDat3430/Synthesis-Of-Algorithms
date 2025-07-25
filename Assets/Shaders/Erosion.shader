@@ -18,10 +18,10 @@ Shader "Custom/Erosion"
     {
         Tags
         {
-            "RenderType" = "Opaque"
+            "RenderType" = "Transparent"
+            "Queue" = "Transparent"
             "RenderPipeline" = "UniversalPipeline"
             "UniversalMaterialType" = "Lit"
-            "IgnoreProjector" = "True"
         }
         LOD 300
 
@@ -33,10 +33,8 @@ Shader "Custom/Erosion"
                 "LightMode" = "UniversalForward"
             }
 
-            ZTest LEqual
             Blend SrcAlpha OneMinusSrcAlpha
-            Cull Front
-
+            ZWrite Off
             HLSLPROGRAM
             #pragma vertex vert
             #pragma fragment frag
@@ -103,12 +101,9 @@ Shader "Custom/Erosion"
                 half3 viewDirWS = normalize(_WorldSpaceCameraPos - i.worldPos);
                 half3 bakedGI = SAMPLE_GI(i.lightmapUV, i.vertexSH, i.normalWS);
                 InputData inputData = InitializeInputData(i.worldPos, i.normalWS, viewDirWS, bakedGI);
-                SurfaceData surfaceData = InitializeSurfaceData(col.rgb, revealTop * col.a, _Metallic, _Smoothness, _Occlusion);
+                SurfaceData surfaceData = InitializeSurfaceData(finalColor.rgb, revealTop * col.a, _Metallic, _Smoothness, _Occlusion);
 
                 return UniversalFragmentPBR(inputData, surfaceData);
-
-
-                return half4(finalColor, revealTop * col.a);
             }
             ENDHLSL
         }
