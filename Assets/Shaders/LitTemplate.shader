@@ -69,9 +69,9 @@ Shader "Custom/LitTemplate"
 
                 half3 viewDirWS = normalize(_WorldSpaceCameraPos - i.worldPos);
                 half3 bakedGI = SAMPLE_GI(i.lightmapUV, i.vertex_SH, i.normalWS);
-                InputData inputData = InitializeInputData(i.worldPos, i.normalWS, viewDirWS, bakedGI);
+                InputData inputData = InitializeInputData(i.worldPos, i.normalWS, viewDirWS);
 
-                SurfaceData surfaceData = InitializeSurfaceData(col.rgb, col.a, _Metallic, _Smoothness, _Occlusion);
+                SurfaceData surfaceData = InitializeSurfaceData(col.rgb, col.a, _Metallic, _Smoothness);
                 return UniversalFragmentPBR(inputData, surfaceData);
             }
             ENDHLSL

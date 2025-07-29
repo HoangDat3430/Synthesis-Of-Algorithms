@@ -164,8 +164,8 @@ Shader "Custom/WaterSurface"
 
                 half3 viewDirWS = normalize(_WorldSpaceCameraPos - i.worldPos);
                 half3 bakedGI = SAMPLE_GI(i.lightmapUV, i.vertexSH, i.normalWS);
-                InputData inputData = InitializeInputData(i.worldPos, i.normalWS, viewDirWS, bakedGI);
-                SurfaceData surfaceData = InitializeSurfaceData(color.rgb, _BaseColor.a, _Metallic, _Smoothness, _Occlusion);
+                InputData inputData = InitializeInputData(i.worldPos, i.normalWS, viewDirWS);
+                SurfaceData surfaceData = InitializeSurfaceData(color.rgb, _BaseColor.a, _Metallic, _Smoothness);
 
                 return UniversalFragmentPBR(inputData, surfaceData);
             }

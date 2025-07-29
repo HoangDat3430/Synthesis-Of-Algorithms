@@ -5,30 +5,30 @@
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/SurfaceInput.hlsl"
 #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/BRDF.hlsl"
+#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Input.hlsl"
+
 // add các define / macro / function that usually used here
-InputData InitializeInputData(float3 worldPos, float3 normalWS, half3 viewDirWS, half3 bakedGI)
+InputData InitializeInputData(float3 worldPos, float3 normalWS, half3 viewDirWS)
 {
     InputData inputData = (InputData)0;
     inputData.positionWS = worldPos;
     inputData.normalWS = normalWS;
     inputData.viewDirectionWS = viewDirWS;
-    inputData.shadowCoord = TransformWorldToShadowCoord(worldPos);
-    inputData.fogCoord = ComputeFogFactor(worldPos);
-    inputData.bakedGI = bakedGI;
     return inputData;
 }
-SurfaceData InitializeSurfaceData(half3 albedo, half alpha, half metallic, half smoothness, half occlusion)
+SurfaceData InitializeSurfaceData(half3 albedo, half alpha, half metallic, half smoothness)
 {
     SurfaceData surfaceData = (SurfaceData)0;
     surfaceData.albedo = albedo;
-    surfaceData.alpha = alpha;
+    surfaceData.specular = 0;
     surfaceData.metallic = metallic;
     surfaceData.smoothness = smoothness;
-    surfaceData.normalTS = float3(0, 0, 1);
-    surfaceData.emission = float3(0, 0, 0);
-    surfaceData.occlusion = occlusion;
+    surfaceData.normalTS = 0;
+    surfaceData.emission = 0;
+    surfaceData.occlusion = 1;
+    surfaceData.alpha = alpha;
     surfaceData.clearCoatMask = 0.0;
-    surfaceData.clearCoatSmoothness = 1.0;
+    surfaceData.clearCoatSmoothness = 0.0;
     return surfaceData;
 }
 #endif

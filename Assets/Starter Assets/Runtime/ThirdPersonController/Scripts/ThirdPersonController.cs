@@ -320,7 +320,7 @@ namespace StarterAssets
             float elapsed = 0f;
             while (elapsed <= dashDuration/2)
             {
-                _animationBlend = Mathf.Lerp(_animationBlend, 0, Time.deltaTime * 2);
+                _animationBlend = Mathf.Lerp(_animationBlend, 0, Time.deltaTime);
                 _animator.SetFloat(_animIDSpeed, _animationBlend);
                 foreach (var mat in SkinnedMesh.materials)
                 {

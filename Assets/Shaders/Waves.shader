@@ -128,12 +128,12 @@ Shader "Custom/Waves"
             {
                 half3 viewDirWS = normalize(_WorldSpaceCameraPos - i.worldPos);
                 half3 bakedGI = SAMPLE_GI(i.lightmapUV, i.vertexSH, i.normalWS);
-                InputData inputData = InitializeInputData(i.worldPos, i.normalWS, viewDirWS, bakedGI);
+                InputData inputData = InitializeInputData(i.worldPos, i.normalWS, viewDirWS);
                 inputData.shadowCoord = TransformWorldToShadowCoord(i.worldPos);
                 float3x3 tangentToWorld = CreateTangentToWorld(i.tangentWS, i.bitangentWS, i.normalWS);
                 inputData.tangentToWorld = tangentToWorld;
                 
-                SurfaceData surfaceData = InitializeSurfaceData(_Color.rgb, _Color.a, _Metallic, _Smoothness, _Occlusion);
+                SurfaceData surfaceData = InitializeSurfaceData(_Color.rgb, _Color.a, _Metallic, _Smoothness);
 
                 return UniversalFragmentPBR(inputData, surfaceData);
             }
