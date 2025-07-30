@@ -170,8 +170,8 @@ Shader "Custom/Lit"
             #pragma instancing_options renderinglayer
             #include_with_pragmas "Packages/com.unity.render-pipelines.universal/ShaderLibrary/DOTS.hlsl"
 
-            #include "Assets/Shaders/LitInput.hlsl"
-            #include "Assets/Shaders/LitForwardPassCustom.hlsl"
+            #include "Assets/ShaderLib/LitInput.hlsl"
+            #include "Assets/ShaderLib/LitForwardPassCustom.hlsl"
             ENDHLSL
         }
 

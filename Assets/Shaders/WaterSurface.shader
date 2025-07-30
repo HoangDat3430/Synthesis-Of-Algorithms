@@ -34,7 +34,7 @@ Shader "Custom/WaterSurface"
             #pragma vertex vert
             #pragma fragment frag
 
-            #include "URPCommon.hlsl"
+            #include "Assets/ShaderLib/URPCommon.hlsl"
 
             struct appdata
             {

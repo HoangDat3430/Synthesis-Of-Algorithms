@@ -27,7 +27,7 @@ Shader "Custom/Erosion"
 
         Pass
         {
-            Blend SrcAlpha OneMinusSrcAlpha
+            Blend One Zero
             Cull Back
             Lighting Off
 
@@ -35,7 +35,7 @@ Shader "Custom/Erosion"
             #pragma vertex vert
             #pragma fragment frag
 
-            #include "URPCommon.hlsl"
+            #include "Assets/ShaderLib/URPCommon.hlsl"
 
             struct appdata
             {

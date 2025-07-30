@@ -8,10 +8,6 @@ Shader "Custom/Waves"
 		_Smoothness ("Metallic", Range(0,1)) = 0.0
 		_Occlusion ("Occlusion", Range(0,1)) = 1.0
 
-        _NormTex("Normal Map", 2D) = "bump" {}
-        _NormStrength("Normal Strength", Range(0, 2)) = 1.0
-        _Color ("Tint", Color) = (0, 0.5, 0.7, 1)
-
         _WaveA ("Wave A (dir, steepness, wavelength)", Vector) = (1,0,0.5,10)
 		_WaveB ("Wave B", Vector) = (0,1,0.25,20)
 		_WaveC ("Wave C", Vector) = (1,1,0.15,10)
@@ -30,7 +26,7 @@ Shader "Custom/Waves"
             #pragma fragment frag
             #pragma target 4.5
 
-            #include "URPCommon.hlsl"
+            #include "Assets/ShaderLib/URPCommon.hlsl"
 
             struct appdata
             {
@@ -45,7 +41,7 @@ Shader "Custom/Waves"
             {
                 float4 vertex : SV_POSITION;
                 float2 uv : TEXCOORD0;
-                float4 normalWS : TEXCOORD1;
+                float3 normalWS : TEXCOORD1;
                 float4 tangentWS : TEXCOORD2;
                 float3 bitangentWS : TEXCOORD3;
                 float3 worldPos : TEXCOORD4;
@@ -55,9 +51,6 @@ Shader "Custom/Waves"
             TEXTURE2D(_MainTex);
             SAMPLER(sampler_MainTex);
             float4 _MainTex_ST;
-            TEXTURE2D(_NormTex);
-            SAMPLER(sampler_NormTex);
-            float _NormStrength;
 
             half _Smoothness;
             half _Metallic;
@@ -108,16 +101,15 @@ Shader "Custom/Waves"
                 p += GerstnerWave(_WaveA, gridPoint, tangent, binormal);
                 p += GerstnerWave(_WaveB, gridPoint, tangent, binormal);
                 p += GerstnerWave(_WaveC, gridPoint, tangent, binormal);
-                float3 normal = normalize(cross(binormal, tangent));
                 v.vertex.xyz = p;
                 
                 o.vertex = TransformObjectToHClip(v.vertex);
                 o.uv = v.uv;
-                //o.normalWS.xyz = normalize(TransformObjectToWorldNormal(v.normal));
-                o.normalWS.xyz = normal;
-                o.tangentWS.xyz = normalize(TransformObjectToWorldDir(v.tangent));
-                o.bitangentWS = cross(o.normalWS, o.tangentWS) * v.tangent.w;
-                o.worldPos = TransformObjectToWorld(v.vertex);
+                o.normalWS = normalize(cross(binormal, tangent));
+                o.tangentWS.xyz = normalize(TransformObjectToWorldDir(v.tangent.xyz));
+                o.tangentWS.w = v.tangent.w;
+                o.bitangentWS = cross(o.normalWS, o.tangentWS.xyz) * v.tangent.w;
+                o.worldPos = TransformObjectToWorld(v.vertex.xyz);
 
                 OUTPUT_LIGHTMAP_UV(v.texcoord1, unity_LightmapST, o.lightmapUV);
                 OUTPUT_SH(v.normal, o.vertexSH);
@@ -130,8 +122,7 @@ Shader "Custom/Waves"
                 half3 bakedGI = SAMPLE_GI(i.lightmapUV, i.vertexSH, i.normalWS);
                 InputData inputData = InitializeInputData(i.worldPos, i.normalWS, viewDirWS);
                 inputData.shadowCoord = TransformWorldToShadowCoord(i.worldPos);
-                float3x3 tangentToWorld = CreateTangentToWorld(i.tangentWS, i.bitangentWS, i.normalWS);
-                inputData.tangentToWorld = tangentToWorld;
+                inputData.tangentToWorld = CreateTangentToWorld(i.tangentWS, i.bitangentWS, i.normalWS);
                 
                 SurfaceData surfaceData = InitializeSurfaceData(_Color.rgb, _Color.a, _Metallic, _Smoothness);
 
