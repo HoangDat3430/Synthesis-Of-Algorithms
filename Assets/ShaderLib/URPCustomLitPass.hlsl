@@ -3,6 +3,8 @@
 TEXTURE2D(_MainTex); SAMPLER(sampler_MainTex);
 
 float4 _MainTex_ST;
+
+float4 _MainColor;
 float _Smoothness;
 
 struct appdata
@@ -47,8 +49,8 @@ half4 frag (v2f i) : SV_Target
     lightingData.shadowCoord = TransformWorldToShadowCoord(i.positionWS);
 
     SurfaceData surfaceData = (SurfaceData)0;
-    surfaceData.albedo = col.rgb;
-    surfaceData.alpha = col.a;
+    surfaceData.albedo = col.rgb * _MainColor.rgb;
+    surfaceData.alpha = col.a * _MainColor.a;
     surfaceData.specular = 1;
     surfaceData.smoothness = _Smoothness;
 
