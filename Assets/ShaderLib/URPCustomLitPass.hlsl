@@ -48,7 +48,7 @@ half4 frag (v2f i
     normalWS *= IS_FRONT_VFACE(frontFace, 1, -1);
 #endif
 
-    float3 normalTS = UnpackNormal(SAMPLE_TEXTURE2D(_NormalTex, sampler_NormalTex, i.uv));
+    float3 normalTS = UnpackNormalScale(SAMPLE_TEXTURE2D(_NormalTex, sampler_NormalTex, i.uv), _NormalStr);
     float3x3 tangentToWorld = CreateTangentToWorld(normalWS, i.tangentWS.xyz, i.tangentWS.w);
     normalWS = normalize(TransformTangentToWorld(normalTS, tangentToWorld));
 
@@ -61,11 +61,16 @@ half4 frag (v2f i
     lightingData.tangentToWorld = tangentToWorld; 
 
     SurfaceData surfaceData = (SurfaceData)0;
-    surfaceData.albedo =  _MainColor.rgb;
-    surfaceData.alpha = col.a * _MainColor.a;
+    surfaceData.albedo = _MainColor.rgb;
+    surfaceData.alpha = _MainColor.a;
+#ifdef _SPECULAR_SETUP
+    surfaceData.specular = SAMPLE_TEXTURE2D(_SpecularMap, sampler_SpecularMap, i.uv).rgb * _SpecularTint;
+    surfaceData.metallic = 0;
+#else
     surfaceData.specular = 1;
-    surfaceData.smoothness = _Smoothness;
-    surfaceData.metallic = _Metallic;
+    surfaceData.metallic = SAMPLE_TEXTURE2D(_MetallicMask, sampler_MetallicMask, i.uv).r * _MetallicStr;
+#endif
+    surfaceData.smoothness = SAMPLE_TEXTURE2D(_SmoothnessMap, sampler_SmoothnessMap, i.uv).r * _Smoothness;
     surfaceData.normalTS = normalTS;
 
     return UniversalFragmentPBR(lightingData, surfaceData);

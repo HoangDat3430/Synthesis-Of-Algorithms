@@ -4,11 +4,14 @@
 
 TEXTURE2D(_MainTex); SAMPLER(sampler_MainTex);
 TEXTURE2D(_NormalTex); SAMPLER(sampler_NormalTex);
+TEXTURE2D(_MetallicMask); SAMPLER(sampler_MetallicMask);
+TEXTURE2D(_SpecularMap); SAMPLER(sampler_SpecularMap);
+TEXTURE2D(_SmoothnessMap); SAMPLER(sampler_SmoothnessMap);
 
 float4 _MainTex_ST;
 
-float4 _MainColor;
-float _Metallic, _Smoothness, _AlphaCutOff;
+float4 _MainColor, _SpecularTint;
+float _MetallicStr, _Smoothness, _AlphaCutOff, _NormalStr;
 
 void TestAlphaClipping(float4 color)
 {
