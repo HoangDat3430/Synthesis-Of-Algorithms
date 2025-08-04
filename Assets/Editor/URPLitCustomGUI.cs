@@ -3,14 +3,22 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using UnityEngine.Rendering;
+using System.Drawing.Drawing2D;
 
 public class URPLitCustomGUI : ShaderGUI
 {
     public enum SurfaceType
     {
         Opaque,
-        Transparent,
+        TransparentBlend,
         TransparentCutout
+    }
+    public enum BlendType
+    {
+        Alpha,
+        Premultiplied,
+        Additive,
+        Multiply
     }
     public enum FaceRenderingMode
     {
@@ -31,11 +39,13 @@ public class URPLitCustomGUI : ShaderGUI
     {
         Material material = materialEditor.target as Material;
         var surfaceProp = BaseShaderGUI.FindProperty("_SurfaceType", properties, true);
-        var FaceRenderingProp = BaseShaderGUI.FindProperty("_FaceRenderingMode", properties, true);
+        var blendProp = BaseShaderGUI.FindProperty("_BlendType", properties, true);
+        var faceRenderingProp = BaseShaderGUI.FindProperty("_FaceRenderingMode", properties, true);
 
         EditorGUI.BeginChangeCheck();
         surfaceProp.floatValue = (int)(SurfaceType)EditorGUILayout.EnumPopup("Surface Type", (SurfaceType)surfaceProp.floatValue);
-        FaceRenderingProp.floatValue = (int)(FaceRenderingMode)EditorGUILayout.EnumPopup("Face Rendering Mode", (FaceRenderingMode)FaceRenderingProp.floatValue);
+        blendProp.floatValue = (int)(FaceRenderingMode)EditorGUILayout.EnumPopup("Blend Type", (BlendType)blendProp.floatValue);
+        faceRenderingProp.floatValue = (int)(FaceRenderingMode)EditorGUILayout.EnumPopup("Face Rendering Mode", (FaceRenderingMode)faceRenderingProp.floatValue);
         if (EditorGUI.EndChangeCheck())
         {
             UpdateSurfaceType(material);
@@ -52,7 +62,7 @@ public class URPLitCustomGUI : ShaderGUI
                 material.SetOverrideTag("RenderType", "Opaque");
                 material.DisableKeyword("_ALPHA_CUTOUT");
                 break;
-            case SurfaceType.Transparent:
+            case SurfaceType.TransparentBlend:
                 material.renderQueue = (int)RenderQueue.Transparent;
                 material.SetOverrideTag("RenderType", "Transparent");
                 material.DisableKeyword("_ALPHA_CUTOUT");
@@ -63,7 +73,7 @@ public class URPLitCustomGUI : ShaderGUI
                 material.EnableKeyword("_ALPHA_CUTOUT");
                 break;
         }
-
+        BlendType blendType = (BlendType)material.GetFloat("_BlendType");
         switch (surfaceType)
         {
             case SurfaceType.Opaque:
@@ -72,14 +82,38 @@ public class URPLitCustomGUI : ShaderGUI
                 material.SetInt("_DestBlend", (int)BlendMode.Zero);
                 material.SetInt("_ZWrite", 1);
                 break;
-            case SurfaceType.Transparent:
-                material.SetInt("_SourceBlend", (int)BlendMode.SrcAlpha);
-                material.SetInt("_DestBlend", (int)BlendMode.OneMinusSrcAlpha);
+            case SurfaceType.TransparentBlend:
+                switch (blendType)
+                {
+                    case BlendType.Alpha:
+                        material.SetInt("_SourceBlend", (int)BlendMode.SrcAlpha);
+                        material.SetInt("_DestBlend", (int)BlendMode.OneMinusSrcAlpha);
+                        break;
+                    case BlendType.Premultiplied:
+                        material.SetInt("_SourceBlend", (int)BlendMode.One);
+                        material.SetInt("_DestBlend", (int)BlendMode.OneMinusSrcAlpha);
+                        break;
+                    case BlendType.Additive:
+                        material.SetInt("_SourceBlend", (int)BlendMode.SrcAlpha);
+                        material.SetInt("_DestBlend", (int)BlendMode.One);
+                        break;
+                    case BlendType.Multiply:
+                        material.SetInt("_SourceBlend", (int)BlendMode.Zero);
+                        material.SetInt("_DestBlend", (int)BlendMode.SrcColor);
+                        break;
+                }
                 material.SetInt("_ZWrite", 0);
                 break;
         }
-        material.SetShaderPassEnabled("ShadowCaster", surfaceType != SurfaceType.Transparent);
-
+        material.SetShaderPassEnabled("ShadowCaster", surfaceType != SurfaceType.TransparentBlend);
+        if (surfaceType == SurfaceType.TransparentBlend && blendType == BlendType.Premultiplied)
+        {
+            material.EnableKeyword("_ALPHAPREMULTIPLY_ON");
+        }
+        else
+        {
+            material.DisableKeyword("_ALPHAPREMULTIPLY_ON");
+        }
         FaceRenderingMode faceRenderingMode = (FaceRenderingMode)material.GetFloat("_FaceRenderingMode");
         switch (faceRenderingMode)
         {
@@ -100,6 +134,5 @@ public class URPLitCustomGUI : ShaderGUI
                 material.EnableKeyword("_DOUBLE_SIDED_NORMALS");
                 break;
         }
-        
     }
 }

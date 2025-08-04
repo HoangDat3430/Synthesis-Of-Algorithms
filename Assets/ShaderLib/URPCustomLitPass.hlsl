@@ -1,4 +1,5 @@
-#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
+#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+#include "Packages/com.unity.render-pipelines.core/ShaderLibrary/ParallaxMapping.hlsl"
 #include "Assets/ShaderLib/URPLitCustomCommon.hlsl"
 
 
@@ -48,6 +49,11 @@ half4 frag (v2f i
     normalWS *= IS_FRONT_VFACE(frontFace, 1, -1);
 #endif
 
+    float3 viewDirWS = GetWorldSpaceNormalizeViewDir(i.positionWS);
+    float3 viewDirTS = GetViewDirectionTangentSpace(i.tangentWS, i.normalWS, viewDirWS);
+
+    i.uv += ParallaxMapping(TEXTURE2D_ARGS(_ParallaxMap, sampler_ParallaxMap), viewDirTS, _HeightStr, i.uv);
+
     float3 normalTS = UnpackNormalScale(SAMPLE_TEXTURE2D(_NormalTex, sampler_NormalTex, i.uv), _NormalStr);
     float3x3 tangentToWorld = CreateTangentToWorld(normalWS, i.tangentWS.xyz, i.tangentWS.w);
     normalWS = normalize(TransformTangentToWorld(normalTS, tangentToWorld));
@@ -56,7 +62,7 @@ half4 frag (v2f i
     lightingData.positionCS = i.vertex;
     lightingData.positionWS = i.positionWS;
     lightingData.normalWS = normalWS;
-    lightingData.viewDirectionWS = GetWorldSpaceNormalizeViewDir(i.positionWS);
+    lightingData.viewDirectionWS = viewDirWS;
     lightingData.shadowCoord = TransformWorldToShadowCoord(i.positionWS);
     lightingData.tangentToWorld = tangentToWorld; 
 
@@ -72,6 +78,10 @@ half4 frag (v2f i
 #endif
     surfaceData.smoothness = SAMPLE_TEXTURE2D(_SmoothnessMap, sampler_SmoothnessMap, i.uv).r * _Smoothness;
     surfaceData.normalTS = normalTS;
+    surfaceData.emission = SAMPLE_TEXTURE2D(_EmissionMap, sampler_EmissionMap, i.uv).r * _EmissionTint;
+    surfaceData.occlusion = 1;
+    surfaceData.clearCoatMask = SAMPLE_TEXTURE2D(_ClearCoatMap, sampler_ClearCoatMap, i.uv).r * _ClearCoatStr;
+    surfaceData.clearCoatSmoothness = SAMPLE_TEXTURE2D(_ClearCoatSmoothnessMap, sampler_ClearCoatSmoothnessMap, i.uv).r * _ClearCoatSmoothness;
 
     return UniversalFragmentPBR(lightingData, surfaceData);
 }
