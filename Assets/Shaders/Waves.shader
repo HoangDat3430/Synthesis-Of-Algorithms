@@ -118,14 +118,16 @@ Shader "Custom/Waves"
 
             half4 frag (v2f i) : SV_Target
             {
+                half4 col = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, i.uv) * _Color;
+
                 half3 viewDirWS = normalize(_WorldSpaceCameraPos - i.worldPos);
                 half3 bakedGI = SAMPLE_GI(i.lightmapUV, i.vertexSH, i.normalWS);
                 InputData inputData = InitializeInputData(i.worldPos, i.normalWS, viewDirWS);
                 inputData.shadowCoord = TransformWorldToShadowCoord(i.worldPos);
                 inputData.tangentToWorld = CreateTangentToWorld(i.tangentWS, i.bitangentWS, i.normalWS);
                 
-                SurfaceData surfaceData = InitializeSurfaceData(_Color.rgb, _Color.a, _Metallic, _Smoothness);
-
+                SurfaceData surfaceData = InitializeSurfaceData(col.rgb, _Color.a, _Metallic, _Smoothness);
+                
                 return UniversalFragmentPBR(inputData, surfaceData);
             }
 

@@ -56,7 +56,7 @@ half4 frag (v2f i
 
     float3 normalTS = UnpackNormalScale(SAMPLE_TEXTURE2D(_NormalTex, sampler_NormalTex, i.uv), _NormalStr);
     float3x3 tangentToWorld = CreateTangentToWorld(normalWS, i.tangentWS.xyz, i.tangentWS.w);
-    normalWS = normalize(TransformTangentToWorld(normalTS, tangentToWorld));
+    //normalWS = normalize(TransformTangentToWorld(normalTS, tangentToWorld));
 
     InputData lightingData = (InputData)0;
     lightingData.positionCS = i.vertex;
