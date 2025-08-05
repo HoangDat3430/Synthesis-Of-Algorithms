@@ -1,6 +1,5 @@
 #ifndef URP_LIT_CUSTOM_SHADOW_CASTER_PASS_INCLUDED
 #define URP_LIT_CUSTOM_SHADOW_CASTER_PASS_INCLUDED
-#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
 #include "Assets/ShaderLib/URPLitCustomCommon.hlsl"
 
 struct appdata

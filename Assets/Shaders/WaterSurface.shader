@@ -143,29 +143,24 @@ Shader "Custom/WaterSurface"
             
             half4 frag(v2f i) : SV_Target
             {
-                //return SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, i.uv);
-                // Sample normal map và unpack
-                float2 speed = _Speed/10;
-                float2 uv1 = i.uv + _Time.y * float2( 0.8,  0.5) * 0.05;
-                float2 uv2 = i.uv + _Time.y * float2(-0.4,  0.6) * 0.08;    
+                float2 uv1 = i.uv + _Time.y * float2(0.5,  0.7) * 0.05;
+                float2 uv2 = i.uv + _Time.y * float2(-0.2,  0.3) * 0.08;    
 
-                float3 n1 = UnpackNormal(SAMPLE_TEXTURE2D(_NormTex, sampler_NormTex, uv1));
-                float3 n2 = UnpackNormal(SAMPLE_TEXTURE2D(_NormTex, sampler_NormTex, uv2));
+                float3 n1 = UnpackNormalScale(SAMPLE_TEXTURE2D(_NormTex, sampler_NormTex, uv1), _NormStrength);
+                float3 n2 = UnpackNormalScale(SAMPLE_TEXTURE2D(_NormTex, sampler_NormTex, uv2), _NormStrength);
 
                 float3 normalTS = normalize(n1 + n2);
-                float2 uv = i.uv + _Time.y * _Speed.xy;
+                float3 normalWS = normalize(i.normalWS);
+                float3x3 tangentToWorld = CreateTangentToWorld(normalWS, i.tangentWS.xyz, i.tangentWS.w);
+                normalWS = normalize(TransformTangentToWorld(normalTS, tangentToWorld));
+                
+                half3 viewDirWS = GetWorldSpaceNormalizeViewDir(i.worldPos);
 
-                normalTS.xy *= _NormStrength;
-                normalTS = normalize(normalTS);
+                InputData inputData = InitializeInputData(i.worldPos, normalWS, viewDirWS);
+                inputData.tangentToWorld = tangentToWorld;
 
-                float ndotl = saturate(dot(normalTS, normalize(_LightDir)));
-
-                float3 color = _BaseColor.rgb * ndotl;
-
-                half3 viewDirWS = normalize(_WorldSpaceCameraPos - i.worldPos);
-                half3 bakedGI = SAMPLE_GI(i.lightmapUV, i.vertexSH, i.normalWS);
-                InputData inputData = InitializeInputData(i.worldPos, i.normalWS, viewDirWS);
-                SurfaceData surfaceData = InitializeSurfaceData(color.rgb, _BaseColor.a, _Metallic, _Smoothness);
+                SurfaceData surfaceData = InitializeSurfaceData(_BaseColor.rgb, _BaseColor.a, _Metallic, _Smoothness);
+                surfaceData.normalTS = normalTS;
 
                 return UniversalFragmentPBR(inputData, surfaceData);
             }

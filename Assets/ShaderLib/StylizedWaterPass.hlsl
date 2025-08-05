@@ -1,4 +1,3 @@
-#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
 #include "Assets/ShaderLib/StylizedWaterInput.hlsl"
 
 struct appdata
@@ -43,21 +42,30 @@ v2f vert (appdata v)
 
 half4 frag (v2f i) : SV_Target
 {
-    half4 col = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, i.uv) * _BaseColor * 2;
+    float3 normalWS = normalize(i.normalWS);
+    float2 uv1 = i.uv + _Time.x * 0.5;
+    float2 uv2 = i.uv + _Time.x * 0.8;
+    float3 n1 = UnpackNormalScale(SAMPLE_TEXTURE2D(_NormalTex1, sampler_NormalTex1, uv1), _NormalStr);
+    float3 n2 = UnpackNormalScale(SAMPLE_TEXTURE2D(_NormalTex2, sampler_NormalTex2, uv2), _NormalStr);
 
+    float3 normalTS = normalize(n1 + n2);
+    float3x3 tangentToWorld = CreateTangentToWorld(normalWS, i.tangentWS.xyz, i.tangentWS.w);
+    normalWS = normalize(TransformTangentToWorld(normalTS, tangentToWorld));
+    
     InputData inputData = (InputData)0;
     inputData.positionCS = i.vertex;
     inputData.positionWS = i.positionWS;
-    inputData.normalWS = normalize(i.normalWS);
+    inputData.normalWS = normalWS;
     inputData.viewDirectionWS = i.viewDirWS;
-    inputData.tangentToWorld = CreateTangentToWorld(i.normalWS, i.tangentWS.xyz, i.tangentWS.w);
+    inputData.tangentToWorld = tangentToWorld;
 
     SurfaceData surfaceData = (SurfaceData)0;   
-    surfaceData.albedo = col.rgb;
-    surfaceData.alpha = col.a;
+    surfaceData.albedo = _BaseColor.rgb;
+    surfaceData.alpha = 1;
     surfaceData.metallic = _Metallic;
     surfaceData.smoothness = _Smoothness;
     surfaceData.occlusion = 1;
+    surfaceData.normalTS = normalTS;
 
     return UniversalFragmentPBR(inputData, surfaceData);
 }

@@ -4,6 +4,10 @@ Shader "Custom/StylizedWater"
     {
         _MainTex ("Texture", 2D) = "white" {}
         _BaseColor ("Base Color", Color) = (1,1,1,1)
+        [Normal] _NormalTex1 ("Normal map 1", 2D) = "bump" {}
+        [Normal] _NormalTex2 ("Normal map 2", 2D) = "bump" {}
+        _NormalStr ("Normal Strength", Range(0,1)) = 0.5
+
         _NoiseTex ("Noise Texture", 2D) = "white" {}
 
         _Metallic ("Metallic", Range(0,1)) = 0.5
@@ -18,9 +22,9 @@ Shader "Custom/StylizedWater"
         Name "Forward Lit"
         Tags 
         { 
-            "RenderType"="Opaque" 
-            "Queue"="Transparent" 
             "RenderPipeline"="UniversalRenderPipeline" 
+            "RenderType"="Opaque" 
+            "Queue"="Geometry" 
         }
         LOD 100
 
