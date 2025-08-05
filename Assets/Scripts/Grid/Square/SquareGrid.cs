@@ -15,7 +15,7 @@ public class SquareGrid : GridBase
     {
         GameObject newGrid = new GameObject(string.Format("X:{0}, Y:{1}", x, y));
         newGrid.transform.parent = GridMgr.Instance.transform;
-        Vector3 pos = new Vector3(x, 0, y);
+        Vector3 pos = new Vector3(x * gridData.edgeSize, 0, y * gridData.edgeSize);
         newGrid.transform.localPosition = pos;
         DrawGrid(newGrid, x, y);
         return new Node(newGrid, new Vector2Int(x, y));
@@ -25,8 +25,7 @@ public class SquareGrid : GridBase
         Mesh mesh = new Mesh();
         newGrid.AddComponent<MeshFilter>().mesh = mesh;
         newGrid.AddComponent<MeshRenderer>().material = gridData.normalMat;
-
-        mesh.vertices = SetVertices(4, x, y);
+        mesh.vertices = SetVertices(4, x * gridData.edgeSize, y * gridData.edgeSize);
         mesh.triangles = new int[] { 0, 1, 2, 2, 3, 0 };
         mesh.uv = SetUVs(x, y, gridData.mapWidth, gridData.mapHeight);
         mesh.RecalculateNormals();
@@ -41,11 +40,10 @@ public class SquareGrid : GridBase
         ci.transform = meshCollider.transform.localToWorldMatrix;
         _submeshes.Add(ci);
     }
-    private Vector2[] SetUVs(int x, int y, int tileCountX, int tileCountY)
+    private Vector2[] SetUVs(float x, float y, int tileCountX, int tileCountY)
     {
         float tileWidth = 1f/tileCountX;
         float tileHeight = 1f/tileCountY;
-
         Vector2[] uvs = new Vector2[4];
         uvs[0] = new Vector2(x * tileWidth, y * tileHeight);
         uvs[1] = new Vector2(x * tileWidth, (y + 1) * tileHeight);
@@ -58,7 +56,7 @@ public class SquareGrid : GridBase
         // uvs[3] = new Vector2(1, 0);
         return uvs;
     }
-    private Vector3[] SetVertices(int verticesCount, int x, int y)
+    private Vector3[] SetVertices(int verticesCount, float x, float y)
     {
         float radius = gridData.edgeSize * Mathf.Sqrt(2) / 2;
         //Vector3 center = new Vector3(x + radius, 0, y + radius);
@@ -72,15 +70,15 @@ public class SquareGrid : GridBase
         //     float posY = center.z + (radius - gridData.gridSpacing) * (float)Mathf.Sin(angleRad);
         //     vertices[i] = new Vector3(posX, 0, posY);
         // }
-        vertices[0] = new Vector3(x, 0, y);
-        vertices[1] = new Vector3(x, 0, y + gridData.edgeSize);
-        vertices[2] = new Vector3(x + gridData.edgeSize, 0, y + gridData.edgeSize);
-        vertices[3] = new Vector3(x + gridData.edgeSize, 0, y);
+        // vertices[0] = new Vector3(x, 0, y);
+        // vertices[1] = new Vector3(x, 0, y + gridData.edgeSize);
+        // vertices[2] = new Vector3(x + gridData.edgeSize, 0, y + gridData.edgeSize);
+        // vertices[3] = new Vector3(x + gridData.edgeSize, 0, y);
 
         vertices[0] = new Vector3(0, 0, 0);
-        vertices[1] = new Vector3(0, 0, 1);
-        vertices[2] = new Vector3(1, 0, 1);
-        vertices[3] = new Vector3(1, 0, 0);
+        vertices[1] = new Vector3(0, 0, gridData.edgeSize);
+        vertices[2] = new Vector3(gridData.edgeSize, 0, gridData.edgeSize);
+        vertices[3] = new Vector3(gridData.edgeSize, 0, 0);
         return vertices;
     }
     private Vector2Int[] GetNeighborDir(Node node)

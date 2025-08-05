@@ -3,7 +3,7 @@ using UnityEngine;
 
 [Serializable] public abstract class GridBaseData
 {
-    public int edgeSize = 1;
+    public float edgeSize = 1;
     public float gridSpacing;
     public int mapWidth = 2;
     public int mapHeight = 4;
