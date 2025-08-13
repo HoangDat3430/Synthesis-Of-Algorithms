@@ -23,9 +23,9 @@ struct v2f
 v2f vert (appdata v)
 {
     v2f o;
-    float2 noiseUV = float2((v.uv + _Time.x * _Speed) * _Scale);
-    float noiseVal = SAMPLE_TEXTURE2D_LOD(_NoiseTex, sampler_NoiseTex, noiseUV, 0).x * _Amplitude;
-    v.vertex += float4(0, v.vertex.y + noiseVal, 0, 0);
+    float2 noiseUV = float2(v.uv + _Time.x * _Speed) * _Scale;
+    float xMod = SAMPLE_TEXTURE2D_LOD(_NoiseTex, sampler_NoiseTex, noiseUV, 1) * _Amplitude;
+    v.vertex.y += xMod;
 
     VertexPositionInputs posIN = GetVertexPositionInputs(v.vertex);
     VertexNormalInputs norIN = GetVertexNormalInputs(v.normal, v.tangent);

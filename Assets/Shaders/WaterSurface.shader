@@ -40,7 +40,7 @@ Shader "Custom/WaterSurface"
             {
                 float2 uv : TEXCOORD0;
                 float4 vertex : POSITION;
-                float4 normal : NORMAL;
+                float3 normal : NORMAL;
                 float4 tangent : TANGENT;
                 float4 texcoord1 : TEXCOORD1;
             };
@@ -48,10 +48,10 @@ Shader "Custom/WaterSurface"
             struct v2f
             {
                 float2 uv : TEXCOORD0;
-                float4 pos : SV_POSITION;
-                float4 normalWS : TEXCOORD1;
+                float4 positionCS : SV_POSITION;
+                float3 normalWS : TEXCOORD1;
                 float4 tangentWS : TEXCOORD2;
-                float3 worldPos : TEXCOORD3;
+                float3 positionWS : TEXCOORD3;
                 DECLARE_LIGHTMAP_OR_SH(lightmapUV, vertexSH, 4);
             };
 
@@ -69,13 +69,12 @@ Shader "Custom/WaterSurface"
             CBUFFER_START(UnityPerMaterial)
                 float4 _TouchPoint[8];
                 int _RippleCount = 0;
+                float4 _Speed;
+                float _Frequency;
+                float _Amplitude;
+                float _FallOff;
+                float _Duration;
             CBUFFER_END
-            
-            float4 _Speed;
-            float _Frequency;
-            float _Amplitude;
-            float _FallOff;
-            float _Duration;
             
             float SpawnWave(float2 uv, float r, float duration, float startTime, float offset, inout float dydxTotal, inout float dydzTotal)
             {
@@ -131,11 +130,11 @@ Shader "Custom/WaterSurface"
                 v.vertex.y += totalWave;
                 o.uv = v.uv;
                 
-                o.pos = TransformObjectToHClip(v.vertex);
-                o.normalWS.xyz = normalize(TransformObjectToWorldNormal(v.normal.xyz));
-                o.normalWS.xyz = normalize(float3(-dydxTotal, 1, -dydzTotal));
+                o.positionCS = TransformObjectToHClip(v.vertex);
+                o.normalWS = normalize(float3(-dydxTotal, 1, -dydzTotal));
                 o.tangentWS.xyz = normalize(TransformObjectToWorldDir(v.tangent));
-                o.worldPos = TransformObjectToWorld(v.vertex);
+                o.tangentWS.w = v.tangent.w;
+                o.positionWS = TransformObjectToWorld(v.vertex);
                 OUTPUT_LIGHTMAP_UV(v.texcoord1, unity_LightmapST, o.lightmapUV);
                 OUTPUT_SH(o.normalWS, o.vertexSH);
                 return o;
@@ -154,9 +153,9 @@ Shader "Custom/WaterSurface"
                 float3x3 tangentToWorld = CreateTangentToWorld(normalWS, i.tangentWS.xyz, i.tangentWS.w);
                 normalWS = normalize(TransformTangentToWorld(normalTS, tangentToWorld));
                 
-                half3 viewDirWS = GetWorldSpaceNormalizeViewDir(i.worldPos);
+                half3 viewDirWS = GetWorldSpaceNormalizeViewDir(i.positionWS);
 
-                InputData inputData = InitializeInputData(i.worldPos, normalWS, viewDirWS);
+                InputData inputData = InitializeInputData(i.positionWS, normalWS, viewDirWS);
                 inputData.tangentToWorld = tangentToWorld;
 
                 SurfaceData surfaceData = InitializeSurfaceData(_BaseColor.rgb, _BaseColor.a, _Metallic, _Smoothness);
