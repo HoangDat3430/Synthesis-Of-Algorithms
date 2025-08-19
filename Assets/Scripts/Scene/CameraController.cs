@@ -15,6 +15,10 @@ public class CameraController : MonoBehaviour
 
     private Vector3 lastMousePos;
 
+    void Awake()
+    {
+        Camera.main.depthTextureMode = DepthTextureMode.Depth;
+    }
     void Start()
     {
         if (targetPivot == null)

@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using UnityEditor;
 using UnityEngine;
 
 public class TerrainGenerator : MonoBehaviour
@@ -25,6 +27,7 @@ public class TerrainGenerator : MonoBehaviour
         GetComponent<MeshFilter>().mesh = mesh;
 
         GenerateTerrain();
+        SaveMesh(mesh, "Custom_Terrain");
         GradientToTexture();
     }
 
@@ -69,7 +72,7 @@ public class TerrainGenerator : MonoBehaviour
             {
                 float yPos = Mathf.PerlinNoise((x + xOffset) * noiseScale, (z + zOffset) * noiseScale) * heightMultiplier;
                 vertices[i] = new Vector3(x, yPos, z);
-                uvs[i] = new Vector2((float)x/xSize, (float)z/zSize);
+                uvs[i] = new Vector2((float)x / xSize, (float)z / zSize);
                 i++;
             }
         }
@@ -104,5 +107,16 @@ public class TerrainGenerator : MonoBehaviour
         mesh.triangles = triangles;
         mesh.uv = uvs;
         mesh.RecalculateNormals();
+    }
+    private void SaveMesh(Mesh mesh, string name)
+    {
+        mesh.name = name;
+        mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
+        string path = $"Assets/CombinedMeshes/{name}.asset";
+        Directory.CreateDirectory("Assets/CombinedMeshes");
+        AssetDatabase.CreateAsset(mesh, path);
+        AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh();
+        Debug.Log("Mesh saved to: " + path);
     }
 }

@@ -13,9 +13,10 @@ Shader "Custom/StylizedWater"
         _Metallic ("Metallic", Range(0,1)) = 0.5
         _Smoothness ("Smoothness", Range(0,1)) = 0.5
 
-        _Speed ("Speed", float) = 1
+        _Speed ("Speed", Vector) = (0,0,0,0)
         _Amplitude ("Amplitude", float) = 1
         _Scale ("Scale", float) = 1
+        _Soft ("Soft", Range(0.01, 0.3)) = 0.1
     }
     SubShader
     {
@@ -23,11 +24,14 @@ Shader "Custom/StylizedWater"
         Tags 
         { 
             "RenderPipeline"="UniversalRenderPipeline" 
-            "RenderType"="Opaque" 
-            "Queue"="Geometry" 
+            "RenderType"="Transparent" 
+            "Queue"="Transparent" 
+            "ForceNoShadowCasting"="True"
         }
         LOD 100
-
+        
+        Blend SrcAlpha OneMinusSrcAlpha
+        ZWrite Off
         
         Pass
         {
