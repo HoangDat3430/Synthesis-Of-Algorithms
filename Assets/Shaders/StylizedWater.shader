@@ -3,6 +3,7 @@ Shader "Custom/StylizedWater"
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
+        _ReflectionTex ("Skybox", 2D) = "white" {}
         _BaseColor ("Base Color", Color) = (1,1,1,1)
         [Normal] _NormalTex1 ("Normal map 1", 2D) = "bump" {}
         [Normal] _NormalTex2 ("Normal map 2", 2D) = "bump" {}
@@ -16,7 +17,7 @@ Shader "Custom/StylizedWater"
         _Speed ("Speed", Vector) = (0,0,0,0)
         _Amplitude ("Amplitude", float) = 1
         _Scale ("Scale", float) = 1
-        _Soft ("Soft", Range(0.01, 0.3)) = 0.1
+        _Soft ("Soft", float) = 0.1
     }
     SubShader
     {

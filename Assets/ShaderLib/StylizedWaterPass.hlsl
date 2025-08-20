@@ -6,6 +6,7 @@ TEXTURE2D(_MainTex); SAMPLER(sampler_MainTex);
 TEXTURE2D(_NoiseTex); SAMPLER(sampler_NoiseTex);
 TEXTURE2D(_NormalTex1); SAMPLER(sampler_NormalTex1);
 TEXTURE2D(_NormalTex2); SAMPLER(sampler_NormalTex2);
+TEXTURE2D(_ReflectionTex); SAMPLER(sampler_ReflectionTex);
 
 float4 _MainTex_ST, _NoiseTex_ST;
 float4 _BaseColor, _Speed;
@@ -37,8 +38,8 @@ v2f vert (appdata v)
 {
     v2f o;
     float2 noiseUV = float2(v.uv + _Time.x * _Speed.x) * _Scale;
-    float xMod = SAMPLE_TEXTURE2D_LOD(_NoiseTex, sampler_NoiseTex, noiseUV, 1).r * _Amplitude;
-    v.vertex.y += xMod;
+    float xMod = SAMPLE_TEXTURE2D_LOD(_NoiseTex, sampler_NoiseTex, noiseUV, 0).r * _Amplitude;
+    v.vertex.y = xMod;
 
     VertexPositionInputs posIN = GetVertexPositionInputs(v.vertex);
     VertexNormalInputs norIN = GetVertexNormalInputs(v.normal, v.tangent);
@@ -72,10 +73,13 @@ half4 frag (v2f i) : SV_Target
     float3 n1 = UnpackNormalScale(SAMPLE_TEXTURE2D(_NormalTex1, sampler_NormalTex1, uv1), _NormalStr * fade);
     float3 n2 = UnpackNormalScale(SAMPLE_TEXTURE2D(_NormalTex2, sampler_NormalTex2, uv2), _NormalStr * fade);
 
-    float3 normalTS = normalize(n1);
+    float3 normalTS = normalize(n1 + n2);
     float3x3 tangentToWorld = CreateTangentToWorld(normalWS, i.tangentWS.xyz, i.tangentWS.w);
     normalWS = normalize(TransformTangentToWorld(normalTS, tangentToWorld));
     
+    float3 reflDir = reflect(-i.viewDirWS, normalWS);
+    float4 envColor = SAMPLE_TEXTURECUBE(_ReflectionTex, sampler_ReflectionTex, reflDir);
+
     InputData inputData = (InputData)0;
     inputData.positionCS = i.vertex;
     inputData.positionWS = i.positionWS;
@@ -84,8 +88,8 @@ half4 frag (v2f i) : SV_Target
     inputData.tangentToWorld = tangentToWorld;
 
     SurfaceData surfaceData = (SurfaceData)0;   
-    surfaceData.albedo = _BaseColor.rgb;
-    surfaceData.alpha = fade * 0.5;
+    surfaceData.albedo = _BaseColor.rgb + envColor.rgb;
+    surfaceData.alpha = fade * 0.8;
     surfaceData.metallic = _Metallic;
     surfaceData.smoothness = _Smoothness;
     surfaceData.occlusion = 1;

@@ -15,9 +15,11 @@ public abstract class GridBase : IGrid
     public Node goal;
     protected List<CombineInstance> _submeshes = new();
     private Queue<Vector4> rippleDatas = new(8);
+    private RenderTexture rippleRT = null;
+    private Material rippleDrawMat = new Material(Shader.Find("Hidden/DrawRipple"));
     public void SetStartPos(Node newStartNode)
     {
-        SetTouchPoint(newStartNode.Position);
+        AddRipple(newStartNode.Position);
         return;
         if (goal != newStartNode)
         {
@@ -71,6 +73,15 @@ public abstract class GridBase : IGrid
         rippleDatas.CopyTo(arr, 0);
         ShaderUtility.SetGlobal(name, arr);
         ShaderUtility.SetGlobal("_RippleCount", rippleDatas.Count);
+    }
+    void AddRipple(Vector2 uvPos)
+    {
+        uvPos = new Vector4(uvPos.x / gridData.mapWidth, uvPos.y / gridData.mapHeight, 0, 0);
+        rippleDrawMat.SetVector("_RipplePos", uvPos);
+        RenderTexture temp = RenderTexture.GetTemporary(rippleRT.width, rippleRT.height, 0);
+        Graphics.Blit(rippleRT, temp);
+        Graphics.Blit(temp, rippleRT, rippleDrawMat);
+        RenderTexture.ReleaseTemporary(temp);
     }
     public void FindAllPaths()
     {
@@ -166,6 +177,7 @@ public abstract class GridBase : IGrid
         GenGrid();
         SetNeighborsForAllGrid();
         UIEventBus.Subscribe<CombineMeshEvent>(CombineMeshes);
+
     }
     public void GenGrid()
     {
@@ -176,6 +188,14 @@ public abstract class GridBase : IGrid
             {
                 gridMap[x, y] = GenSingleNode(x, y);
                 SetTerrain(gridMap[x, y], TerrainType.Water);
+                if (rippleRT == null)
+                {
+                    rippleRT =new RenderTexture(512, 512, 0, RenderTextureFormat.R8);
+                    rippleRT.wrapMode = TextureWrapMode.Clamp;
+                    rippleRT.filterMode = FilterMode.Bilinear;
+                    rippleRT.Create();
+                }
+                gridData.terrainMat[1].SetTexture("_RippleTex", rippleRT);
             }
         }
     }
