@@ -176,7 +176,7 @@ namespace StarterAssets
             }
             if (Input.GetKeyDown(KeyCode.LeftShift) && canDash)
             {
-                StartCoroutine(Teleport());
+                StartCoroutine(Dash());
             }
         }
 
@@ -291,13 +291,28 @@ namespace StarterAssets
             _controller.Move(_moveDir.normalized * (_speed * Time.deltaTime) +
                              new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
 
+            //ripple effect
+            ripple.transform.position = transform.position;
+            if (inWater) ripple.gameObject.SetActive(true);
+            else ripple.gameObject.SetActive(false);
+            // Physics.Raycast(transform.position, Vector3.down, out isGround, 2.7f, LayerMask.GetMask("Ground"));
+            // Debug.DrawRay(transform.position, Vector3.down* 2.7f);
+
             // update animator if using character
             if (_hasAnimator)
             {
                 _animator.SetFloat(_animIDSpeed, _animationBlend);
                 _animator.SetFloat(_animIDMotionSpeed, inputMagnitude);
             }
+            // ripple effect
+            float height = _controller.height + _controller.radius;
+            inWater = Physics.Raycast(transform.position + Vector3.up * height, Vector3.down, height, LayerMask.GetMask("Water"));
+            //Debug.DrawRay(transform.position + Vector3.up * height, Vector3.down* height);
+            ripple.transform.position = transform.position;
         }
+        public ParticleSystem ripple;
+        private bool inWater;
+
         IEnumerator Dash()
         {
             isDashing = true;

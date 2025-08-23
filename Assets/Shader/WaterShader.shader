@@ -5,7 +5,6 @@ Shader "Custom/WaterShader"
         _RippleTex ("Ripple Render Texture", 2D) = "white" {}
         _BaseColor ("Base Color", Color) = (1,1,1,1)
         _NormalStr ("Normal Strength", Range(0,1)) = 0.5
-        _RippleStr ("Ripple Strength", Range(0,1)) = 0.5
         _Smoothness ("Smoothness", Range(0,1)) = 1
         _Metallic ("Metallic", Range(0,1)) = 1
     }
@@ -61,7 +60,7 @@ Shader "Custom/WaterShader"
             SAMPLER(sampler_RippleTex);
             float4 _RippleTex_ST, _RippleTex_TexelSize;
             float4 _BaseColor;
-            float _NormalStr, _RippleStr, _Smoothness, _Metallic;
+            float _NormalStr, _Smoothness, _Metallic;
 
             v2f vert (appdata v)
             {

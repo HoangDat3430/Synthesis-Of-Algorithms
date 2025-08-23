@@ -60,12 +60,12 @@ public class Player : MonoBehaviour
         if (inWater) ripple.gameObject.SetActive(true);
         else ripple.gameObject.SetActive(false);
         Physics.Raycast(transform.position, Vector3.down, out isGround, 2.7f, LayerMask.GetMask("Ground"));
-        Debug.DrawRay(transform.position, Vector3.down* 2.7f);
+        //Debug.DrawRay(transform.position, Vector3.down* 2.7f);
 
         //
         float height = cc.height + cc.radius;
         inWater = Physics.Raycast(transform.position + Vector3.up * height, Vector3.down, height*2, LayerMask.GetMask("Water"));
-        Debug.DrawRay(transform.position + Vector3.up * height, Vector3.down* height);
+        //Debug.DrawRay(transform.position + Vector3.up * height, Vector3.down* height);
     }
     void Jumping()
     {
@@ -88,44 +88,4 @@ public class Player : MonoBehaviour
         Cameraman.transform.eulerAngles = new Vector3(CameraY, Cameraman.transform.eulerAngles.y, 0);
         Cameraman.transform.GetChild(0).transform.localPosition = new Vector3(0, 1.15f, Zoom);
     }
-    // void CreateRipple(int Start, int End, int Delta, float Speed, float Size, float Lifetime)
-    // {
-    //     Vector3 forward = ripple.transform.eulerAngles;
-    //     forward.y = Start;
-    //     ripple.transform.eulerAngles = forward;
-
-    //     for (int i = Start; i < End; i+=Delta)
-    //     {
-    //         ripple.Emit(transform.position + ripple.transform.forward * 1.15f, ripple.transform.forward * Speed, Size, Lifetime, Color.white);
-    //         ripple.transform.Rotate(Vector3.up * Delta, Space.World);
-    //     }
-    // }
-    // private void OnTriggerEnter(Collider other)
-    // {
-        
-    //     // && !isGround.collider && Mathf.Abs(VelocityY) > 0.1f  && Mathf.Abs(VelocityY) > 0.1f
-    //     if(other.gameObject.layer == 4)
-    //     {
-    //         //CreateRipple(-180, 180, 2, 5, 3f, 3);
-    //         ripple.Emit(transform.position, Vector3.zero, 5, 0.1f, Color.white);
-    //     }
-    // }
-    // /*
-    // private void OnTriggerStay(Collider other)
-    // {
-    //     if(other.gameObject.layer == 4 && VelocityXZ > 0.025f && Time.renderedFrameCount % 3 == 0)
-    //     {
-    //         int y = (int)transform.eulerAngles.y;
-    //         CreateRipple(y-100, y+100, 3, 5f, 2.65f, 3f);
-    //     }
-    // }
-    // */
-    // private void OnTriggerExit(Collider other)
-    // {
-    //     if(other.gameObject.layer == 4)
-    //     {
-    //         //CreateRipple(-180, 180, 2, 5, 3f, 3);
-    //         ripple.Emit(transform.position, Vector3.zero, 5, 0.1f, Color.white);
-    //     }
-    // }
 }
