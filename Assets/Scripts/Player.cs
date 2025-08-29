@@ -49,12 +49,12 @@ public class Player : MonoBehaviour
         camForward.y = 0;
 
         Vector3 move = camRight.normalized * Input.GetAxis("Horizontal") + camForward.normalized * Input.GetAxis("Vertical");
-        cc.Move(move.normalized * Time.deltaTime * 10 * Speed * ((Input.GetKey(KeyCode.LeftShift)?2:1)));
-        if(move.magnitude > 0) transform.forward = move.normalized;
+        cc.Move(move.normalized * Time.deltaTime * 10 * Speed * ((Input.GetKey(KeyCode.LeftShift) ? 2 : 1)));
+        if (move.magnitude > 0) transform.forward = move.normalized;
 
         GravityForce -= Gravity * Time.deltaTime * 5;
-        if(isGround.collider && GravityForce < -2) GravityForce = -2;
-        else if(GravityForce < -99) GravityForce = -99;
+        if (isGround.collider && GravityForce < -2) GravityForce = -2;
+        else if (GravityForce < -99) GravityForce = -99;
         cc.Move(new Vector3(0, GravityForce * Time.deltaTime, 0));
 
         if (inWater) ripple.gameObject.SetActive(true);
@@ -64,7 +64,7 @@ public class Player : MonoBehaviour
 
         //
         float height = cc.height + cc.radius;
-        inWater = Physics.Raycast(transform.position + Vector3.up * height, Vector3.down, height*2, LayerMask.GetMask("Water"));
+        inWater = Physics.Raycast(transform.position + Vector3.up * height, Vector3.down, height * 2, LayerMask.GetMask("Water"));
         //Debug.DrawRay(transform.position + Vector3.up * height, Vector3.down* height);
     }
     void Jumping()

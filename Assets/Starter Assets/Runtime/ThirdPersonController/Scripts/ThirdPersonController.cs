@@ -1,11 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.XR;
 #endif
 
 /* Note: animations are called via the controller for both the character and capsule using animator null checks
@@ -176,7 +174,7 @@ namespace StarterAssets
             }
             if (Input.GetKeyDown(KeyCode.LeftShift) && canDash)
             {
-                StartCoroutine(Dash());
+                //StartCoroutine(Dash());
             }
         }
 

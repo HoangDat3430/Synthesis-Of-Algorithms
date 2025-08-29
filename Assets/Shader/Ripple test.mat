@@ -39,6 +39,14 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _NormalTex1:
+        m_Texture: {fileID: 2800000, guid: 0461207e7df59e746b93ecf6a2bee6f9, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _NormalTex2:
+        m_Texture: {fileID: 2800000, guid: 043360a5e4f6272458012c9eb81736f7, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _RippleTex:
         m_Texture: {fileID: 8400000, guid: 43e2b9607b42991478d8484af3059a23, type: 2}
         m_Scale: {x: 1, y: 1}
@@ -92,6 +100,7 @@ Material:
     - Vector4_0531145fc8bd4885a11bbfd5e06d8bde: {r: 0, g: 0, b: 0, a: 0}
     - Vector4_30ff1b7c168246afafa779c6e55a1329: {r: 0, g: 0, b: 0, a: 0}
     - _BaseColor: {r: 0.25882354, g: 0.6039216, b: 0.49411765, a: 0.5803922}
+    - _Speed: {r: 0.4, g: 0.3, b: 0.5, a: 0.2}
   m_BuildTextureStacks: []
 --- !u!114 &9219190360827224079
 MonoBehaviour:
