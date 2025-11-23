@@ -123,9 +123,9 @@ Material:
     - _GlossMapScale: 1
     - _Glossiness: 0.65
     - _GlossyReflections: 1
-    - _Metallic: 0.63
+    - _Metallic: 0
     - _Mode: 0
-    - _NormStrength: 0.5
+    - _NormStrength: 0.1
     - _Occlusion: 1
     - _OcclusionStrength: 1
     - _Parallax: 0.02
@@ -148,6 +148,7 @@ Material:
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _GridSize: {r: 32, g: 2, b: 0, a: 0}
     - _LightDir: {r: 0.5, g: 0.5, b: 1, a: 0}
+    - _NormSpd: {r: 0.03, g: 0.05, b: 0.08, a: 0.04}
     - _SpecColor: {r: 0.2, g: 0.2, b: 0.2, a: 1}
     - _Speed: {r: 0.1, g: 0, b: 0, a: 0}
     - _TileIndex: {r: 5, g: 123, b: 0, a: 0}

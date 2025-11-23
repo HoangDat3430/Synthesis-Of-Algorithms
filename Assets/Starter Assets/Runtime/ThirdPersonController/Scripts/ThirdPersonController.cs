@@ -91,7 +91,7 @@ namespace StarterAssets
         private float _verticalVelocity;
         private float _terminalVelocity = 53.0f;
 
-        Vector3 _moveDir = Vector3.zero;   
+        Vector3 _moveDir = Vector3.zero;
         bool isDashing = false;
         bool canDash = true;
         float dashSpd = 5f;
@@ -146,7 +146,7 @@ namespace StarterAssets
         private void Start()
         {
             _cinemachineTargetYaw = CinemachineCameraTarget.transform.rotation.eulerAngles.y;
-            
+
             _hasAnimator = TryGetComponent(out _animator);
             _controller = GetComponent<CharacterController>();
             _input = GetComponent<StarterAssetsInputs>();
@@ -290,9 +290,9 @@ namespace StarterAssets
                              new Vector3(0.0f, _verticalVelocity, 0.0f) * Time.deltaTime);
 
             //ripple effect
-            ripple.transform.position = transform.position;
-            if (inWater) ripple.gameObject.SetActive(true);
-            else ripple.gameObject.SetActive(false);
+            // ripple.transform.position = transform.position;
+            // if (inWater) ripple.gameObject.SetActive(true);
+            // else ripple.gameObject.SetActive(false);
             // Physics.Raycast(transform.position, Vector3.down, out isGround, 2.7f, LayerMask.GetMask("Ground"));
             // Debug.DrawRay(transform.position, Vector3.down* 2.7f);
 
@@ -304,12 +304,12 @@ namespace StarterAssets
             }
             // ripple effect
             float height = _controller.height + _controller.radius;
-            inWater = Physics.Raycast(transform.position + Vector3.up * height, Vector3.down, height, LayerMask.GetMask("Water"));
-            //Debug.DrawRay(transform.position + Vector3.up * height, Vector3.down* height);
-            ripple.transform.position = transform.position;
+            // inWater = Physics.Raycast(transform.position + Vector3.up * height, Vector3.down, height, LayerMask.GetMask("Water"));
+            // //Debug.DrawRay(transform.position + Vector3.up * height, Vector3.down* height);
+            // ripple.transform.position = transform.position;
         }
-        public ParticleSystem ripple;
-        private bool inWater;
+        // public ParticleSystem ripple;
+        // private bool inWater;
 
         IEnumerator Dash()
         {
@@ -331,7 +331,7 @@ namespace StarterAssets
             isDashing = true;
             canDash = false;
             float elapsed = 0f;
-            while (elapsed <= dashDuration/2)
+            while (elapsed <= dashDuration / 2)
             {
                 _animationBlend = Mathf.Lerp(_animationBlend, 0, Time.deltaTime);
                 _animator.SetFloat(_animIDSpeed, _animationBlend);
@@ -496,7 +496,7 @@ namespace StarterAssets
             if (animationEvent.animatorClipInfo.weight > 0.5f)
             {
                 AudioSource.PlayClipAtPoint(LandingAudioClip, transform.TransformPoint(_controller.center), FootstepAudioVolume);
-                Vector3 legL = (transform.forward-transform.right) * 0.2f;
+                Vector3 legL = (transform.forward - transform.right) * 0.2f;
                 Vector3 legR = transform.right * 0.2f;
                 AddRippleEffect(legL);
                 AddRippleEffect(legR);

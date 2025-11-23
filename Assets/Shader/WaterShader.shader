@@ -6,7 +6,6 @@ Shader "Custom/WaterShader"
         _BaseColor ("Base Color", Color) = (1,1,1,1)
 
         [Normal] _NormalTex1 ("Normal Texture 1", 2D) = "white" {}
-        [Normal] _NormalTex2 ("Normal Texture 2", 2D) = "white" {}
         _NormalStr ("Normal Strength", Range(0,1)) = 0.5
         _Speed ("Speed", Vector) = (0,0,0,0)
 
@@ -63,7 +62,6 @@ Shader "Custom/WaterShader"
 
             TEXTURE2D(_RippleTex);SAMPLER(sampler_RippleTex);
             TEXTURE2D(_NormalTex1);SAMPLER(sampler_NormalTex1);
-            TEXTURE2D(_NormalTex2);SAMPLER(sampler_NormalTex2);
 
             float4 _RippleTex_ST, _RippleTex_TexelSize;
             float4 _BaseColor, _Speed;
@@ -88,7 +86,7 @@ Shader "Custom/WaterShader"
                 float2 uv1 = sin(i.uv + _Time.x * _Speed.xy);
                 float2 uv2 = sin(i.uv + _Time.x * _Speed.zw);
                 float n1 = UnpackNormalScale(SAMPLE_TEXTURE2D(_NormalTex1, sampler_NormalTex1, uv1), _NormalStr);
-                float n2 = UnpackNormalScale(SAMPLE_TEXTURE2D(_NormalTex2, sampler_NormalTex2, uv2), _NormalStr);
+                float n2 = UnpackNormalScale(SAMPLE_TEXTURE2D(_NormalTex1, sampler_NormalTex1, uv2), _NormalStr);
 
                 float2 duv = _RippleTex_TexelSize.xy;
                 float hL = SAMPLE_TEXTURE2D(_RippleTex, sampler_RippleTex, i.uv + float2(-duv.x, 0)).r;

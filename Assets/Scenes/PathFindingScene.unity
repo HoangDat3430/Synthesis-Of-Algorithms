@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.73024267, g: 0.7889841, b: 0.8498617, a: 1}
+  m_IndirectSpecularColor: {r: 0.7302272, g: 0.7889773, b: 0.84986025, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -167,7 +167,7 @@ CharacterController:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Height: 1
+  m_Height: 2
   m_Radius: 0.5
   m_SlopeLimit: 45
   m_StepOffset: 0.3
@@ -253,7 +253,7 @@ Transform:
   m_GameObject: {fileID: 140695017}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 2.3117, y: 2.3117, z: 2.3117}
   m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 218125389}
@@ -315,7 +315,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 218125388}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 64.5, y: 19, z: 39.7}
+  m_LocalPosition: {x: 40.07, y: 18.16, z: 63.44}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -453,8 +453,8 @@ MonoBehaviour:
       data:
         edgeSize: 1
         gridSpacing: 0
-        mapWidth: 100
-        mapHeight: 100
+        mapWidth: 500
+        mapHeight: 500
         normalMat: {fileID: 2100000, guid: b2b28a9908c593c46ad054ae0ff5c36a, type: 2}
         startMat: {fileID: 2100000, guid: 9f3d9e04f8141174d85e11b28032fc73, type: 2}
         desiredMat: {fileID: 2100000, guid: c6dee1c6e6014a34089cb3bc0e6287a3, type: 2}
@@ -6221,14 +6221,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 505058681}
     m_Modifications:
-    - target: {fileID: 6600631136331952960, guid: 73e234dd4cee1e84d87b2efb5212ca68, type: 3}
-      propertyPath: TextureSize
-      value: 1024
-      objectReference: {fileID: 0}
-    - target: {fileID: 6600631136331952965, guid: 73e234dd4cee1e84d87b2efb5212ca68, type: 3}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 2100000, guid: 5e20eab82bc57ca41a28ef6f61fb6f74, type: 2}
     - target: {fileID: 6600631136331952967, guid: 73e234dd4cee1e84d87b2efb5212ca68, type: 3}
       propertyPath: m_RootOrder
       value: -1

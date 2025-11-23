@@ -2,12 +2,10 @@ Shader "Custom/WaterSurface"
 {
     Properties
     {
-        _MainTex ("Texture", 2D) = "white" {}
-
         // Normal map
         _NormTex("Normal Map", 2D) = "bump" {}
         _NormStrength("Normal Strength", Range(0, 2)) = 1.0
-        _LightDir ("Light Direction", Vector) = (0,0,0,0)
+        _NormSpd ("Normal Speed", Vector) = (0,0,0,0)
         _BaseColor ("Tint", Color) = (0, 0.5, 0.7, 1)
         
         // Lighting
@@ -25,11 +23,27 @@ Shader "Custom/WaterSurface"
     SubShader
     {
         Name "Forward Lit"
-        Tags { "RenderPipeline"="UniversalRenderPipeline" "RenderType"="Opaque" "Queue"="Geometry" }
+        Tags 
+        { 
+            "RenderPipeline"="UniversalRenderPipiline"
+            "RenderType"="Transparent"
+            "UniversalMaterialType" = "Lit"
+            "Queue"="Transparent"
+            "DisableBatching"="False"
+        }
         LOD 100
 
         Pass
         {
+            Name "ForwardLit"
+            Tags 
+            { 
+                "LightMode" = "UniversalForward" 
+            }
+            Cull Back
+            Blend SrcAlpha OneMinusSrcAlpha
+            ZTest LEqual
+            ZWrite Off
             HLSLPROGRAM
             #pragma vertex vert
             #pragma fragment frag
@@ -55,14 +69,13 @@ Shader "Custom/WaterSurface"
                 DECLARE_LIGHTMAP_OR_SH(lightmapUV, vertexSH, 4);
             };
 
-            TEXTURE2D(_MainTex);
             SAMPLER(sampler_MainTex);
             float4 _MainTex_ST;
             TEXTURE2D(_NormTex);
             SAMPLER(sampler_NormTex);
             float _NormStrength;
             float4 _BaseColor;
-            float4 _LightDir;
+            float4 _NormSpd;
 
             float _Metallic, _Smoothness, _Occlusion;
 
@@ -142,8 +155,8 @@ Shader "Custom/WaterSurface"
             
             half4 frag(v2f i) : SV_Target
             {
-                float2 uv1 = i.uv + _Time.y * float2(0.5,  0.7) * 0.05;
-                float2 uv2 = i.uv + _Time.y * float2(-0.2,  0.3) * 0.08;    
+                float2 uv1 = i.uv + _Time.y * _NormSpd.xy;
+                float2 uv2 = i.uv + _Time.y * _NormSpd.zw;    
 
                 float3 n1 = UnpackNormalScale(SAMPLE_TEXTURE2D(_NormTex, sampler_NormTex, uv1), _NormStrength);
                 float3 n2 = UnpackNormalScale(SAMPLE_TEXTURE2D(_NormTex, sampler_NormTex, uv2), _NormStrength);
@@ -158,7 +171,7 @@ Shader "Custom/WaterSurface"
                 InputData inputData = InitializeInputData(i.positionWS, normalWS, viewDirWS);
                 inputData.tangentToWorld = tangentToWorld;
 
-                SurfaceData surfaceData = InitializeSurfaceData(_BaseColor.rgb, _BaseColor.a, _Metallic, _Smoothness);
+                SurfaceData surfaceData = InitializeSurfaceData(_BaseColor.rgb, _BaseColor.a * 0.8, _Metallic, _Smoothness);
                 surfaceData.normalTS = normalTS;
 
                 return UniversalFragmentPBR(inputData, surfaceData);
